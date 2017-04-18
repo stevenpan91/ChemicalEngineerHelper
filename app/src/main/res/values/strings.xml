@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Chemical Engineer Helper</string>
+
+    <!--<string name="edit_message">Enter a message</string>
+    <string name="enter_density">Enter Density</string>
+    <string name="enter_volume">Enter Volume</string>
+    <string name="button_send">Send</string>-->
+    <string name="action_settings">Settings</string>
+</resources>
