@@ -1,15 +1,12 @@
-package localhost.steven.pocketengineer;
+package localhost.steven.chemicalengineerhelper;
 
 //import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -17,24 +14,20 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.app.Activity;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import static java.sql.Types.NULL;
 
@@ -359,7 +352,7 @@ public class CalculateScreen extends AppCompatActivity {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int height = displayMetrics.heightPixels;
-            int offset=height/2;
+            int offset=height-300;
 
 
             resultText = new TextView(ctx);
@@ -662,7 +655,10 @@ public class CalculateScreen extends AppCompatActivity {
 
     public native double FrictionFactor(double density, double massflow, double pipeId, double viscosity);
 
-    public native double PipePressureDrop(double density, double massflow, double pipeId, double fricFrac, double pipeLen);
+    public native double PipePressureDropIncompressible(double density, double massflow, double pipeId, double fricFrac, double pipeLen);
+
+    public native double PipePressureDropCompressible(double initPressure, double initTemp, double MW, double Z,
+                                                      double mu, double massFlow, double pipeId, double pipeLen);
 
     static {
         System.loadLibrary("native-lib");
@@ -1411,6 +1407,11 @@ public class CalculateScreen extends AppCompatActivity {
 
                     break;
 
+            case "4":
+                CalcLines=new CalcLine[8];
+                SetCalculationScheme(CalcLines,calcLayout,5,false);
+                MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null);
+
         }
 
         MainCalcPage.calcReady=true;
@@ -1527,6 +1528,24 @@ public class CalculateScreen extends AppCompatActivity {
 
                 break;
 
+            //compressible pressure drop
+            case 5:
+                CLines[0]=new CalcLine(0,0,"Enter Initial Pressure(Absolute)","PressureAbsolute",this,theLayout,inPopup);
+                CLines[1]=new CalcLine(1,0,"Enter Temperature","Temperature",this,theLayout,inPopup);
+                CLines[2]=new CalcLine(2,0,"Enter Molecular Weight","None",this,theLayout,inPopup);
+                CLines[3]=new CalcLine(3,0,"Enter Compressibility Factor","None",this,theLayout,inPopup);
+
+                CLines[4]=new CalcLine(4,0, "Enter Viscosity", "Viscosity",this,theLayout,inPopup);
+                CLines[5]=new CalcLine(5,0,"Enter Mass Flow Rate","MassFlowRate",this,theLayout,inPopup);
+                CLines[6]=new CalcLine(6,2, "Enter Pipe Internal Diameter", "Length",this,theLayout,inPopup);
+                CLines[7]=new CalcLine(7,0, "Enter Pipe Length", "Length",this,theLayout,inPopup);
+
+
+                pipeHelp=new PipeHelp(CLines[6],0,this);
+
+
+                break;
+
         }
 
 
@@ -1615,13 +1634,17 @@ public class CalculateScreen extends AppCompatActivity {
                     break;
 
                 case 3:
-                    resultDbl=PipePressureDrop(lineVals[0],lineVals[1],lineVals[2],lineVals[3],lineVals[4]);
+                    resultDbl=PipePressureDropIncompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],lineVals[4]);
                     break;
 
                 case 4:
                     resultDbl=FrictionFactor(lineVals[0],lineVals[1],lineVals[2],lineVals[3]);
                     break;
 
+                case 5:
+                    resultDbl=PipePressureDropCompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],
+                            lineVals[4],lineVals[5],lineVals[6],lineVals[7]);
+                    break;
                 }
             }
             if (resultDbl != NULL) {

@@ -191,7 +191,7 @@ double StringParseConvert (double value,std::string unit, bool toSI){
 
 extern "C"
 jstring
-Java_localhost_steven_pocketengineer_MainPage_stringFromJNI(
+Java_localhost_steven_chemicalengineerhelper_MainPage_stringFromJNI(
         JNIEnv* env,
         jobject /* this */) {
     std::string hello = "Testing C++ Connection.";
@@ -200,7 +200,7 @@ Java_localhost_steven_pocketengineer_MainPage_stringFromJNI(
 
 extern "C"
 jdouble
-Java_localhost_steven_pocketengineer_CalculateScreen_convertToSI(
+Java_localhost_steven_chemicalengineerhelper_CalculateScreen_convertToSI(
         JNIEnv* env,
         jobject thisObj, jdouble value, jstring unit){
 
@@ -217,7 +217,7 @@ Java_localhost_steven_pocketengineer_CalculateScreen_convertToSI(
 
 extern "C"
 jdouble
-Java_localhost_steven_pocketengineer_CalculateScreen_convertFromSI(
+Java_localhost_steven_chemicalengineerhelper_CalculateScreen_convertFromSI(
         JNIEnv* env,
         jobject thisObj, jdouble value, jstring unit){
 
@@ -314,9 +314,67 @@ double FrictionFactor(double density, double massFlow, double pipeId, double vis
     return fricFac;
 }
 
+double VaporDensityZFactor(double pressure,double temp, double MW, double Z){
+    //MW is in g/mol need to convert to kg/mol so factor of 1000
+    double density = pressure*MW/1000/Z/8.3144598/temp;
+    return density;
+
+}
+
+double PipePressureDropCompressible(double initPressure,double initTemp, double MW, double Z, double mu,
+                                    double massFlow, double pipeId, double pipeLen){
+
+    //use algorithm for total Length L, first cut segment L1, arbitrary alpha a
+    //L=L1*(a^0 + a^1 + ... + a^9) where a is less than 1 such that the segments at the end are
+    //smallest
+
+    double alpha=7/8.0;
+
+    //sum series of alpha^0 to alpha^9
+    double summation = (1-pow(alpha,10.0))/(1-alpha);
+
+    //segment length, segment DP
+    double thisLength;
+    double thisDP;
+    double thisPressure=initPressure;
+
+    double totalDP;
+    double density;
+    double fricFrac;
+
+    double L1 = pipeLen/summation;
+
+    for(int i=0; i<10; i++){
+        thisLength=L1*pow(alpha,i);
+        density=VaporDensityZFactor(thisPressure,initTemp,MW,Z);
+        fricFrac=FrictionFactor(density,massFlow,pipeId,mu);
+        thisDP=fricFrac*thisLength*density/2*pow(FlowVelocity(massFlow,density,pipeId),2.0)/pipeId;
+
+        if(thisDP<thisPressure)
+            thisPressure=thisPressure-thisDP;
+        else
+            thisPressure=0;
+
+        totalDP+=thisDP;
+    }
+
+    return thisPressure;
+}
+
+double PipePressureDropIncompressible(double density, double massFlow, double pipeId, double pipeLen, double fricFrac){
+
+    //use algorithm for total Length L, first cut segment L1, arbitrary alpha a
+    //L=L1*(a^0 + a^1 + ... + a^9) where a is less than 1 such that the segments at the end are
+    //smallest
+    double totalDP=fricFrac*pipeLen*density/2*pow(FlowVelocity(massFlow,density,pipeId),2.0)/pipeId;
+
+
+    return totalDP;
+}
+
 extern "C"
 jdouble
-Java_localhost_steven_pocketengineer_CalculateScreen_ReynoldsNumber(
+Java_localhost_steven_chemicalengineerhelper_CalculateScreen_ReynoldsNumber(
         JNIEnv* env,
         jobject thisObj, jdouble density, jdouble massFlow, jdouble pipeId, jdouble viscosity){
 
@@ -328,7 +386,7 @@ Java_localhost_steven_pocketengineer_CalculateScreen_ReynoldsNumber(
 
 extern "C"
 jdouble
-Java_localhost_steven_pocketengineer_CalculateScreen_FrictionFactor(
+Java_localhost_steven_chemicalengineerhelper_CalculateScreen_FrictionFactor(
         JNIEnv* env,
         jobject thisObj, jdouble density, jdouble massFlow, jdouble pipeId, jdouble viscosity){
 
@@ -341,12 +399,26 @@ Java_localhost_steven_pocketengineer_CalculateScreen_FrictionFactor(
 
 extern "C"
 jdouble
-Java_localhost_steven_pocketengineer_CalculateScreen_PipePressureDrop(
+Java_localhost_steven_chemicalengineerhelper_CalculateScreen_PipePressureDropIncompressible(
         JNIEnv* env,
         jobject thisObj, jdouble density, jdouble massFlow, jdouble pipeId, jdouble pipeLen, jdouble fricFac){
 
 
-    double result= fricFac*pipeLen*density/2*pow(FlowVelocity(massFlow,density,pipeId),2.0)/pipeId;
+    double result= PipePressureDropIncompressible(density,massFlow,pipeId,pipeLen,fricFac);
+
+
+    return (jdouble) result;
+}
+
+extern "C"
+jdouble
+Java_localhost_steven_chemicalengineerhelper_CalculateScreen_PipePressureDropCompressible(
+        JNIEnv* env,
+        jobject thisObj, jdouble initPressure, jdouble initTemp, jdouble MW,
+        jdouble Z, jdouble mu,jdouble massFlow, jdouble pipeId, jdouble pipeLen){
+
+
+    double result= PipePressureDropCompressible(initPressure,initTemp,MW,Z,mu,massFlow,pipeId,pipeLen);
 
 
     return (jdouble) result;

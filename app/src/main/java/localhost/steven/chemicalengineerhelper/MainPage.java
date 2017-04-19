@@ -1,23 +1,14 @@
-package localhost.steven.pocketengineer;
+package localhost.steven.chemicalengineerhelper;
 
-import android.content.res.TypedArray;
 import android.util.TypedValue;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.Toolbar;
 import android.content.Intent;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout;
 import android.widget.Button;
-import android.provider.Settings;
 import android.view.View.OnClickListener;
 
 public class MainPage extends AppCompatActivity {
@@ -79,17 +70,25 @@ public class MainPage extends AppCompatActivity {
         setupButton(ReDButton,2);
         ReDButton.setId(2);
 
-        //friction factor button
-        Button PipePDropButton = new Button(this);
-        PipePDropButton.setText("Pipe Pressure Drop (Darcy-Weisbach)");
-        setupButton(PipePDropButton,3);
-        PipePDropButton.setId(3);
+        //pipe liquid pressure drop button
+        Button PipePDropInCompButton = new Button(this);
+        PipePDropInCompButton.setText("Pipe Pressure Drop Incompressible (Darcy-Weisbach)");
+        setupButton(PipePDropInCompButton,3);
+        PipePDropInCompButton.setId(3);
+
+
+        //pipe vapor pressure drop button
+        Button PipePDropCompButton = new Button(this);
+        PipePDropCompButton.setText("Pipe Pressure Drop Compressible (Darcy-Weisbach)");
+        setupButton(PipePDropCompButton,4);
+        PipePDropCompButton.setId(4);
 
        
         relativeLayout.addView(densityButton);
         relativeLayout.addView(vDensityButton);
         relativeLayout.addView(ReDButton);
-        relativeLayout.addView(PipePDropButton);
+        relativeLayout.addView(PipePDropInCompButton);
+        relativeLayout.addView(PipePDropCompButton);
 
 
     }
