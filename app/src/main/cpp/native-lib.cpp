@@ -339,13 +339,17 @@ double PipePressureDropCompressible(double initPressure,double initTemp, double 
     double thisPressure=initPressure;
 
     double totalDP;
-    double density;
+    double density=VaporDensityZFactor(thisPressure,initTemp,MW,Z);
     double fricFrac;
+
+    double totalLen=0;
 
     double L1 = pipeLen/summation;
 
     for(int i=0; i<10; i++){
         thisLength=L1*pow(alpha,i);
+        totalLen+=thisLength;
+        //density=(density+VaporDensityZFactor(thisPressure,initTemp,MW,Z))/2;
         density=VaporDensityZFactor(thisPressure,initTemp,MW,Z);
         fricFrac=FrictionFactor(density,massFlow,pipeId,mu);
         thisDP=fricFrac*thisLength*density/2*pow(FlowVelocity(massFlow,density,pipeId),2.0)/pipeId;
