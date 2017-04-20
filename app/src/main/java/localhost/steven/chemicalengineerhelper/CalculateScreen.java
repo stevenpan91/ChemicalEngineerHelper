@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -348,12 +349,17 @@ public class CalculateScreen extends AppCompatActivity {
             
         }
 
-        public void SetResultsGeneral(String property,Context ctx, boolean isPopup){
+        public void SetResultsGeneral(String property,Context ctx, boolean isPopup, int fieldAmounts){
+
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int height = displayMetrics.heightPixels;
-            int offset=height-300;
 
+            //int calcLineAmounts = CalcLines.length;
+            int calcLineAmounts=fieldAmounts;
+            //int offset=height-300;
+
+            int offset=calcLineAmounts*100+200;
 
             resultText = new TextView(ctx);
             resultText.setTextSize(12);
@@ -387,7 +393,8 @@ public class CalculateScreen extends AppCompatActivity {
 
         
         //Selection type pages
-        public CalcPage(String property,RelativeLayout theLayout, Context ctx,CalcLine parentLine)
+        public CalcPage(String property,RelativeLayout theLayout, Context ctx,CalcLine parentLine,
+                        int fieldAmounts)
         {
             ParentLine=parentLine;
             BaseLayout=theLayout;
@@ -400,7 +407,7 @@ public class CalculateScreen extends AppCompatActivity {
                 isPopup=false;
 
 
-            SetResultsGeneral(property,ctx,isPopup);
+            SetResultsGeneral(property,ctx,isPopup,fieldAmounts);
 
             theLayout.addView(resultText);
             theLayout.addView(resultDropDown);
@@ -474,7 +481,9 @@ public class CalculateScreen extends AppCompatActivity {
             else
                 isPopup=false;
 
-            SetResultsGeneral(property,ctx,isPopup);
+            int fieldAmounts = CalcLines.length;
+
+            SetResultsGeneral(property,ctx,isPopup, fieldAmounts);
 
 
             resultDropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
@@ -653,12 +662,13 @@ public class CalculateScreen extends AppCompatActivity {
 
     public native double ReynoldsNumber(double density, double massflow, double pipeId, double viscosity);
 
-    public native double FrictionFactor(double density, double massflow, double pipeId, double viscosity);
+    public native double FrictionFactor(double density, double massflow, double pipeId, double viscosity, double roughness);
 
     public native double PipePressureDropIncompressible(double density, double massflow, double pipeId, double fricFrac, double pipeLen);
 
     public native double PipePressureDropCompressible(double initPressure, double initTemp, double MW, double Z,
-                                                      double mu, double massFlow, double pipeId, double pipeLen);
+                                                      double mu, double massFlow, double pipeId, double pipeLen,
+                                                      double roughness);
 
     static {
         System.loadLibrary("native-lib");
@@ -1024,7 +1034,7 @@ public class CalculateScreen extends AppCompatActivity {
             //PW.setWidth(500);
 
 
-            CL.PopupPage = new CalcPage("Length",CL.popupLayout,ctx,CL);
+            CL.PopupPage = new CalcPage("Length",CL.popupLayout,ctx,CL,2);
 
             NPSDD = new Spinner(ctx, Spinner.MODE_DIALOG);
 
@@ -1330,6 +1340,8 @@ public class CalculateScreen extends AppCompatActivity {
         calcLayout=(RelativeLayout) findViewById(R.id.calcscreen);
 
 
+        //setContentView(calcLayout);
+
         /*//Calculation button
         Button calcButton = new Button(this);
         RelativeLayout.LayoutParams calcButtonParams =
@@ -1388,7 +1400,7 @@ public class CalculateScreen extends AppCompatActivity {
 
             case "3":
                 //generateResultSection("PressureAbsolute");
-                CalcLines = new CalcLine[5];
+                CalcLines = new CalcLine[6];
 
                 SetCalculationScheme(CalcLines,calcLayout,3,false);
 
@@ -1396,19 +1408,19 @@ public class CalculateScreen extends AppCompatActivity {
 
                 //friction factor aid
 
-                CalcLines[4].PopupCalcLines = new CalcLine[4];
+                //CalcLines[4].PopupCalcLines = new CalcLine[4];
 
-                SetCalculationScheme(CalcLines[4].PopupCalcLines,CalcLines[4].popupLayout,4,true);
+                //SetCalculationScheme(CalcLines[4].PopupCalcLines,CalcLines[4].popupLayout,4,true);
 
-                CalcLines[4].PopupPage = new CalcPage(
-                        "None",CalcLines[4].popupLayout,CalcLines[4].PopupCalcLines,this,4,CalcLines[4]);
+                //CalcLines[4].PopupPage = new CalcPage(
+                 //       "None",CalcLines[4].popupLayout,CalcLines[4].PopupCalcLines,this,4,CalcLines[4]);
 
-                CalcLines[4].PopupPage.calcReady=true;
+               // CalcLines[4].PopupPage.calcReady=true;
 
                     break;
 
             case "4":
-                CalcLines=new CalcLine[8];
+                CalcLines=new CalcLine[9];
                 SetCalculationScheme(CalcLines,calcLayout,5,false);
                 MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null);
 
@@ -1500,8 +1512,10 @@ public class CalculateScreen extends AppCompatActivity {
                 CLines[1]=new CalcLine(1,0,"Enter Mass Flow Rate","MassFlowRate",this,theLayout,inPopup);
                 CLines[2]=new CalcLine(2,2, "Enter Pipe Internal Diameter", "Length",this,theLayout,inPopup);
                 CLines[3]=new CalcLine(3,0, "Enter Pipe Length", "Length",this,theLayout,inPopup);
-                CLines[4]=new CalcLine(4,4, "Enter Friction Factor", "None",this,theLayout,inPopup);
-
+                //CLines[4]=new CalcLine(4,4, "Enter Friction Factor", "None",this,theLayout,inPopup);
+                CLines[4]=new CalcLine(4,0, "Enter Viscosity", "Viscosity",this,theLayout,inPopup);
+                CLines[5]=new CalcLine(5,0, "Enter Roughness", "Length",this,theLayout,inPopup);
+                CLines[5].textLine.setText("4.57e-5");
                 //initPipeHelp(CLines[2],0);
                 pipeHelp=new PipeHelp(CLines[2],0,this);
                 break;
@@ -1522,6 +1536,9 @@ public class CalculateScreen extends AppCompatActivity {
                         new CalcLine(2,2, "Enter Pipe Internal Diameter", "Length",this,theLayout,inPopup);
                 CLines[3]=
                         new CalcLine(3,0, "Enter Viscosity (Dynamic)", "Viscosity",this,theLayout,inPopup);
+                CLines[4]=
+                        new CalcLine(4,0, "Enter Roughness", "Length",this, theLayout, inPopup);
+                CLines[4].textLine.setText("4.57e-5");
 
                 pipeHelp=new PipeHelp(CLines[2],0,this);
                 //initPipeHelp(CLines[2],0);
@@ -1539,7 +1556,9 @@ public class CalculateScreen extends AppCompatActivity {
                 CLines[5]=new CalcLine(5,0,"Enter Mass Flow Rate","MassFlowRate",this,theLayout,inPopup);
                 CLines[6]=new CalcLine(6,2, "Enter Pipe Internal Diameter", "Length",this,theLayout,inPopup);
                 CLines[7]=new CalcLine(7,0, "Enter Pipe Length", "Length",this,theLayout,inPopup);
-
+                CLines[8]=
+                        new CalcLine(8,0, "Enter Roughness", "Length",this, theLayout, inPopup);
+                CLines[8].textLine.setText("4.57e-5");
 
                 pipeHelp=new PipeHelp(CLines[6],0,this);
 
@@ -1634,16 +1653,17 @@ public class CalculateScreen extends AppCompatActivity {
                     break;
 
                 case 3:
-                    resultDbl=PipePressureDropIncompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],lineVals[4]);
+                    double fricFrac=FrictionFactor(lineVals[0],lineVals[1],lineVals[2],lineVals[4],lineVals[5]);
+                    resultDbl=PipePressureDropIncompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],fricFrac);
                     break;
 
                 case 4:
-                    resultDbl=FrictionFactor(lineVals[0],lineVals[1],lineVals[2],lineVals[3]);
+                    resultDbl=FrictionFactor(lineVals[0],lineVals[1],lineVals[2],lineVals[3],lineVals[4]);
                     break;
 
                 case 5:
                     resultDbl=PipePressureDropCompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],
-                            lineVals[4],lineVals[5],lineVals[6],lineVals[7]);
+                            lineVals[4],lineVals[5],lineVals[6],lineVals[7],lineVals[8]);
                     break;
                 }
             }
