@@ -473,8 +473,9 @@ public class CalculateScreen extends AppCompatActivity {
         
         //calcline type pages
         public CalcPage(String property, RelativeLayout theLayout, CalcLine[] CLines, Context ctx,
-                        int calcType,CalcLine parentLine){
+                        int calcType,CalcLine parentLine,String resultMsg){
 
+            resultMessage=resultMsg;
             ParentLine=parentLine;
             CalcLines=CLines;
             BaseLayout=theLayout;
@@ -499,7 +500,7 @@ public class CalculateScreen extends AppCompatActivity {
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
                                            int position, long id){
                     ((TextView)parentView.getChildAt(0)).setTextSize(12);
-                    calcResult(returnThis(),pageCalcType);
+                    calcResult(returnThis(),pageCalcType,resultMessage);
                 }
 
                 @Override
@@ -557,7 +558,7 @@ public class CalculateScreen extends AppCompatActivity {
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                        calcResult(returnThis(),pageCalcType);
+                        calcResult(returnThis(),pageCalcType,resultMessage);
                     }
 
                 });
@@ -598,7 +599,7 @@ public class CalculateScreen extends AppCompatActivity {
 
 
 
-                        calcResult(returnThis(),pageCalcType);
+                        calcResult(returnThis(),pageCalcType,resultMessage);
                     }
 
                     @Override
@@ -633,6 +634,7 @@ public class CalculateScreen extends AppCompatActivity {
         //CalcLine ResultLine;
 
         TextView resultText;
+        String resultMessage;
         RelativeLayout.LayoutParams rTParams;
         Spinner resultDropDown;
         RelativeLayout.LayoutParams rDDParams;
@@ -1384,7 +1386,9 @@ public class CalculateScreen extends AppCompatActivity {
                     CalcLines = new CalcLine[2];
                     SetCalculationScheme(CalcLines,calcLayout,0,false);
 
-                    MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,0,null);
+                    MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,0,null,"Density");
+
+
 
                     break;
             case "1":
@@ -1392,7 +1396,7 @@ public class CalculateScreen extends AppCompatActivity {
                     CalcLines=new CalcLine[4];
                     SetCalculationScheme(CalcLines,calcLayout,1,false);
 
-                    MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,1,null);
+                    MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,1,null,"Vapor Density");
 
                     break;
 
@@ -1402,7 +1406,7 @@ public class CalculateScreen extends AppCompatActivity {
 
                     SetCalculationScheme(CalcLines,calcLayout,2,false);
 
-                     MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,2,null);
+                     MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,2,null, "Reynolds Number");
 
                     break;
 
@@ -1412,7 +1416,9 @@ public class CalculateScreen extends AppCompatActivity {
 
                 SetCalculationScheme(CalcLines,calcLayout,3,false);
 
-                MainCalcPage = new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,3,null);
+                MainCalcPage = new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,3,null, "Differential Pressure");
+
+                //MainCalcPage.resultText.setText("Pressure Difference");
 
                 //friction factor aid
 
@@ -1430,7 +1436,9 @@ public class CalculateScreen extends AppCompatActivity {
             case "4":
                 CalcLines=new CalcLine[9];
                 SetCalculationScheme(CalcLines,calcLayout,5,false);
-                MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null);
+                MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null, "Final Pressure");
+
+                //MainCalcPage.resultText.setText("Final Pressure");
 
         }
 
@@ -1603,7 +1611,7 @@ public class CalculateScreen extends AppCompatActivity {
     }
 
 //Calculation result page
-    public void calcResult(CalcPage CPage, int calcType) {
+    public void calcResult(CalcPage CPage, int calcType, String resultMessage) {
 
         //Intent intent=new Intent(this,DisplayMessageActivity.class);
     //if (resultDropDown!=null)
@@ -1612,8 +1620,8 @@ public class CalculateScreen extends AppCompatActivity {
 
         if (CPage.calcReady) {
 
-            String result = "No result";
-            double resultDbl = NULL;
+            String result = resultMessage;
+            Double resultDbl = null;
 
             //double[] lineVals = new double[lines.length];
             //String[] lineUnits = new String[lines.length];
@@ -1675,12 +1683,14 @@ public class CalculateScreen extends AppCompatActivity {
                     break;
                 }
             }
-            if (resultDbl != NULL) {
+            if (resultDbl != null) {
                 resultDbl = convertFromSI(resultDbl, CPage.resultDropDown.getSelectedItem().toString());
                 result = Double.toString(resultDbl);
+
             }
 
             CPage.resultText.setText(result);
+
 
             //intent.putExtra(EXTRA_MESSAGE,result);
             //startActivity(intent);

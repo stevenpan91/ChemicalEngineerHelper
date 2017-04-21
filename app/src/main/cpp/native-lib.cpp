@@ -357,7 +357,7 @@ double PipePressureDropCompressible(double initPressure,double initTemp, double 
         if(thisDP<thisPressure)
             thisPressure=thisPressure-thisDP;
         else
-            thisPressure=0;
+            thisPressure=0.0;
 
         totalDP+=thisDP;
     }
