@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -167,7 +168,10 @@ public class CalculateScreen extends AppCompatActivity {
                 inputHelpButton = new Button(ctx);
                 iHelpBParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 150);
 
+                popupLayoutWrap = new LinearLayout(ctx);
                 popupLayout = new RelativeLayout(ctx);
+
+                popupLayoutWrap.addView(popupLayout);
 
                 isClicked = true;
 
@@ -219,7 +223,7 @@ public class CalculateScreen extends AppCompatActivity {
 
                        if (isClicked) {
                            isClicked = false;
-                           popupWindow.showAtLocation(popupLayout, Gravity.CENTER, 10, 10);
+                           popupWindow.showAtLocation(popupLayoutWrap, Gravity.CENTER, 10, 10);
                            //popupWindow.update(0, 0, popupWindow.getWidth(), popupWindow.getHeight());
                        } else {
                            isClicked = true;
@@ -233,7 +237,7 @@ public class CalculateScreen extends AppCompatActivity {
 
 
 
-                popupWindow.setContentView(popupLayout);
+                popupWindow.setContentView(popupLayoutWrap);
                 
                 theLayout.addView(inputHelpButton);
             }
@@ -263,6 +267,7 @@ public class CalculateScreen extends AppCompatActivity {
         RelativeLayout.LayoutParams iHelpBParam;
 
         RelativeLayout popupLayout;
+        LinearLayout popupLayoutWrap;
         
         CalcLine [] PopupCalcLines;
 
@@ -319,6 +324,7 @@ public class CalculateScreen extends AppCompatActivity {
             );
 
 
+
             ParentLine.popupLayout.
                     measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -326,14 +332,16 @@ public class CalculateScreen extends AppCompatActivity {
 
             int pUHeight = ParentLine.popupLayout.getMeasuredHeight();
 
-
             ParentLine.confParams =
                     new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 150);
+
+            ParentLine.ConfirmButton.setLayoutParams(ParentLine.confParams);//debugged on SHARP SH90B
+
 
             ParentLine.confParams.setMargins(0, pUHeight, 0, 0);
 
 
-            ParentLine.ConfirmButton.setLayoutParams(ParentLine.confParams);
+
 
 
             ParentLine.exitParams =
