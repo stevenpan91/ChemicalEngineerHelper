@@ -12,24 +12,75 @@ import {
   View
 } from 'react-native';
 
-export default class ChemEngHelper extends Component {
+import{
+    StackNavigator,
+}from 'react-navigation';
+
+
+
+class ChemEngHelper extends React.Component {
+  static navigationOptions = { title: 'Welcome', };
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to the Chemical Engineer Helper App!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
+
+      const{navigate}=this.props.navigation;
+      return(
+        <Button
+            title="Go to Equation Page"
+            onPress={() =>
+                this.props.navigation.navigate('Equations')
+            }
+        />
+      );
   }
 }
+
+//export default class ChemEngHelper extends Component {
+//  static navigationOptions = { title: 'Welcome', };
+//  render() {
+//
+//      const{navigate}=this.props.navigation;
+//      return(
+//        <Button
+//            title="Go to Equation Page"
+//            onPress={() =>
+//                this.props.navigation.navigate('Equations')
+//            }
+//        />
+//      );
+
+//    return (
+//      <View style={styles.container}>
+//        <Text style={styles.welcome}>
+//          Welcome to the Chemical Engineer Helper App!
+//        </Text>
+//        <Text style={styles.instructions}>
+//          To get started, edit index.android.js
+//        </Text>
+//        <Text style={styles.instructions}>
+//          Double tap R on your keyboard to reload,{'\n'}
+//          Shake or press menu button for dev menu
+//        </Text>
+//      </View>
+//    );
+//  }
+//}
+
+class EquationScreen extends React.Component{
+
+    render() {
+
+
+          return(
+            <View style={styles.container}>
+                    <Text style={styles.welcome}>
+                      This is the equation page
+                    </Text>
+            </View>
+          );
+    }
+}
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -48,6 +99,11 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+});
+
+const App=StackNavigator({
+    Main: {screen: ChemEngHelper},
+    Equations: {screen: EquationScreen},
 });
 
 AppRegistry.registerComponent('ChemEngHelper', () => ChemEngHelper);
