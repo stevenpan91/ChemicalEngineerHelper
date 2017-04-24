@@ -9,28 +9,43 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  Button,
+  TouchableHighlight,
+  Navigator
 } from 'react-native';
 
-import{
-    StackNavigator,
-}from 'react-navigation';
+//import{
+//    StackNavigator,
+//}from 'react-navigation';
 
 
 
-class ChemEngHelper extends React.Component {
-  static navigationOptions = { title: 'Welcome', };
+export default class ChemEngHelper extends Component {
+  //static navigationOptions = { title: 'Welcome', };
   render() {
-
-      const{navigate}=this.props.navigation;
-      return(
-        <Button
-            title="Go to Equation Page"
-            onPress={() =>
-                this.props.navigation.navigate('Equations')
+    const routes = [
+      {title: 'First Scene', index: 0},
+      {title: 'Second Scene', index: 1},
+    ];
+    return (
+      <Navigator
+        initialRoute={routes[0]}
+        initialRouteStack={routes}
+        renderScene={(route, navigator) =>
+          <TouchableHighlight onPress={() => {
+            if (route.index === 0) {
+              navigator.push(routes[1]);
+            } else {
+              navigator.pop();
             }
-        />
-      );
+          }}>
+          <Text>Hello {route.title}!</Text>
+          </TouchableHighlight>
+        }
+        style={{padding: 100}}
+      />
+    );
   }
 }
 
@@ -65,20 +80,21 @@ class ChemEngHelper extends React.Component {
 //  }
 //}
 
-class EquationScreen extends React.Component{
-
-    render() {
-
-
-          return(
-            <View style={styles.container}>
-                    <Text style={styles.welcome}>
-                      This is the equation page
-                    </Text>
-            </View>
-          );
-    }
-}
+//class EquationScreen extends React.Component{
+//
+//   static navigationOptions = ({navigation}) => ({
+//       title: navigation.state.params.name,
+//     });
+//     render() {
+//       const { goBack } = this.props.navigation;
+//       return (
+//         <Button
+//           title="Go back"
+//           onPress={() => goBack()}
+//         />
+//       );
+//     }
+//}
 
 
 
@@ -101,9 +117,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const App=StackNavigator({
-    Main: {screen: ChemEngHelper},
-    Equations: {screen: EquationScreen},
-});
+//const App=StackNavigator({
+//    Main: {screen: ChemEngHelper},
+//    Equations: {screen: EquationScreen},
+//});
 
 AppRegistry.registerComponent('ChemEngHelper', () => ChemEngHelper);
