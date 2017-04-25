@@ -4,20 +4,35 @@
  * @flow
  */
 import React, { Component } from 'react';
-import { AppRegistry, Text, View, StyleSheet } from 'react-native';
+import { 
+  AppRegistry, 
+  Text, 
+
+View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import IosFonts from './app/components/IosFonts/IosFonts';
 import Logo from './app/components/Logo/Logo';
+import Footer from './app/components/Footer/Footer';
 
 class ChemEngHelper extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Logo style={styles.image}/>
-        <Text style={styles.welcome}>Welcome to the Chemical Engineer Helper App!</Text>
-        <Text style={styles.button}>Get Started!</Text>
-        <Text style={styles.quote}>"Quote of Deep thought"</Text>
-        <Text style={styles.quote}>- Scientist , 1968</Text>
+        <View style={styles.main}>
+          <Logo style={styles.image}/>
+          <Text style={styles.welcome}> Welcome to the Chemical Engineer Helper App!</Text>
+          <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity>
+              <Text style={styles.button}>Get Started!</Text>
+            </TouchableOpacity>
+            <Text> </Text>
+            <TouchableOpacity>
+              <Text style={styles.button}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.quote}> "Quote of Deep thought" </Text>
+          <Text style={styles.quote}> - Scientist , 1968 </Text>
+        </View>
       </View>
     );
   }
@@ -26,10 +41,13 @@ class ChemEngHelper extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#03D6F3',
     paddingTop : 40,
+  },
+  main: {
+    flex: .9,
+    justifyContent:'center',
+    alignItems: 'center'
   },
   welcome: {
     fontSize: 20,
@@ -53,7 +71,7 @@ const styles = StyleSheet.create({
     fontFamily: 'snell roundhand',
   },
   image : {
-    tintColor: '#FFFFFF',
+    tintColor: '#ffffff',
   }
 });
 
