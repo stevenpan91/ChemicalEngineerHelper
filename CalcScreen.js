@@ -8,10 +8,11 @@ import {
   Button,
   TouchableHighlight,
   TouchableOpacity,
+  TextInput,
   Navigator
 } from 'react-native';
 
-class EquationScreen extends Component {
+class CalcScreen extends Component {
   render() {
     return (
       <Navigator
@@ -25,27 +26,24 @@ class EquationScreen extends Component {
   }
   renderScene(route, navigator) {
     return (
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <TouchableOpacity
-            onPress={this.gotoCalculation.bind(this)}>
-          <Text>Density</Text>
-        </TouchableOpacity>
+       <View style={{flex: 1}}>
+            <TextInput style={{textAlign: 'left', marginTop: 100}}>Input Test</TextInput>
+
+
+
+
+          <Text style={{textAlign: 'left', marginTop:200}}>Result</Text>
+
       </View>
     );
   }
-  gotoCalculation() {
-    this.props.navigator.push({
-      id: 'CalcScreen',
-      sceneConfig: Navigator.SceneConfigs.FloatFromBottom,
-    });
-  }
 
-//  gotoMain() {
+//    gotoMain() {
 //        this.props.navigator.push({
 //          id: 'MainScreen',
 //          sceneConfig: Navigator.SceneConfigs.FloatFromBottom,
 //        });
-//   }
+//      }
 }
 
 var NavigationBarRouteMapper = {
@@ -73,9 +71,9 @@ var NavigationBarRouteMapper = {
     return (
       <TouchableOpacity style={{flex: 1, justifyContent: 'center'}}
         onPress={() => navigator.push({
-                                                    id: 'MainScreen',
-                                                    sceneConfig: Navigator.SceneConfigs.FloatFromBottom,
-                                                  })}>
+                                                                     id: 'MainScreen',
+                                                                     sceneConfig: Navigator.SceneConfigs.FloatFromBottom,
+                                                                   })}>
         <Text style={{color: 'white', margin: 10, fontSize: 16}}>
           Main Page
         </Text>
@@ -85,4 +83,4 @@ var NavigationBarRouteMapper = {
 
 };
 
-module.exports = EquationScreen;
+module.exports = CalcScreen;

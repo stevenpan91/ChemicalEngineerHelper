@@ -19,6 +19,7 @@ import {
 
 var MainScreen = require('./MainScreen');
 var EquationScreen = require('./EquationScreen');
+var CalcScreen=require('./CalcScreen');
 
 
 
@@ -55,6 +56,12 @@ export default class ChemEngHelper extends Component {
             navigator={navigator} />
         );
       }
+      if (routeId === 'CalcScreen') {
+              return (
+                <CalcScreen
+                  navigator={navigator} />
+              );
+            }
 
       return this.noRoute(navigator);
 
@@ -64,7 +71,7 @@ export default class ChemEngHelper extends Component {
         <View style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
           <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
               onPress={() => navigator.pop()}>
-            <Text style={{color: 'red', fontWeight: 'bold'}}>请在 index.js 的 renderScene 中配置这个页面的路由</Text>
+            <Text style={{color: 'red', fontWeight: 'bold'}}>Set the route at index.js</Text>
           </TouchableOpacity>
         </View>
       );
