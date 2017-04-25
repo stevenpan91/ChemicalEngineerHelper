@@ -1,4 +1,9 @@
-react/node_modules/
 .DS_Store
-react/ios/
-react/android/
+android/
+gradle/
+gradlew
+gradlew.bat
+local.properties
+node_modules/
+.idea/
+ios/
