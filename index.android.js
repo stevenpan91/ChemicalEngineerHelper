@@ -12,42 +12,71 @@ import {
   View,
   Button,
   TouchableHighlight,
+  TouchableOpacity,
   Navigator
 } from 'react-native';
 
-//import{
-//    StackNavigator,
-//}from 'react-navigation';
+
+var MainScreen = require('./MainScreen');
+var EquationScreen = require('./EquationScreen');
+
+
 
 
 
 export default class ChemEngHelper extends Component {
   //static navigationOptions = { title: 'Welcome', };
+
   render() {
-    const routes = [
-      {title: 'First Scene', index: 0},
-      {title: 'Second Scene', index: 1},
-    ];
-    return (
-      <Navigator
-        initialRoute={routes[0]}
-        initialRouteStack={routes}
-        renderScene={(route, navigator) =>
-          <TouchableHighlight onPress={() => {
-            if (route.index === 0) {
-              navigator.push(routes[1]);
-            } else {
-              navigator.pop();
-            }
-          }}>
-          <Text>Hello {route.title}!</Text>
-          </TouchableHighlight>
-        }
-        style={{padding: 100}}
-      />
-    );
+      return (
+        <Navigator
+            initialRoute={{id: 'MainScreen', name: 'Index'}}
+            renderScene={this.renderScene.bind(this)}
+            configureScene={(route) => {
+              if (route.sceneConfig) {
+                return route.sceneConfig;
+              }
+              return Navigator.SceneConfigs.FloatFromRight;
+            }} />
+      );
+    }
+    renderScene(route, navigator) {
+      var routeId = route.id;
+
+      if (routeId === 'MainScreen') {
+        return (
+          <MainScreen
+              navigator={navigator} />
+        );
+      }
+      if (routeId === 'EquationScreen') {
+        return (
+          <EquationScreen
+            navigator={navigator} />
+        );
+      }
+
+      return this.noRoute(navigator);
+
+    }
+    noRoute(navigator) {
+      return (
+        <View style={{flex: 1, alignItems: 'stretch', justifyContent: 'center'}}>
+          <TouchableOpacity style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+              onPress={() => navigator.pop()}>
+            <Text style={{color: 'red', fontWeight: 'bold'}}>请在 index.js 的 renderScene 中配置这个页面的路由</Text>
+          </TouchableOpacity>
+        </View>
+      );
   }
 }
+
+
+
+
+
+
+
 
 //export default class ChemEngHelper extends Component {
 //  static navigationOptions = { title: 'Welcome', };
@@ -121,5 +150,5 @@ const styles = StyleSheet.create({
 //    Main: {screen: ChemEngHelper},
 //    Equations: {screen: EquationScreen},
 //});
-
+//module.exports=EquationScreen;
 AppRegistry.registerComponent('ChemEngHelper', () => ChemEngHelper);
