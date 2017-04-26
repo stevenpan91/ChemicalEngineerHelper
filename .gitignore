@@ -1,9 +1,5 @@
 .DS_Store
-android/
-gradle/
-gradlew
-gradlew.bat
 local.properties
 node_modules/
-.idea/
-ios/
+ios/build/
+android/

@@ -21,7 +21,7 @@ class ChemEngHelper extends Component {
         <View style={styles.main}>
           <Logo style={styles.image}/>
           <Text style={styles.welcome}> Welcome to the Chemical Engineer Helper App!</Text>
-          <View style={{flexDirection: 'row'}}>
+          <View style={styles.row}>
             <TouchableOpacity>
               <Text style={styles.button}>Get Started!</Text>
             </TouchableOpacity>
@@ -72,6 +72,9 @@ const styles = StyleSheet.create({
   },
   image : {
     tintColor: '#ffffff',
+  },
+  row: {
+    flexDirection: 'row'
   }
 });
 
