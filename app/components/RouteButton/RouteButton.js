@@ -32,11 +32,11 @@ in the scene you want to call the RouteButton in
 export default class RouteButton extends Component {
   render(props){
     const { navigate } = this.props.navigate;
-    if(this.props.text) {
-      txt = this.props.text
-    } else {
-      txt = this.props.title
-    }
+    if(this.props.text) 
+      txt = this.props.text; 
+    else 
+      txt = this.props.title;
+
     return (
       <TouchableOpacity
       onPress={() => navigate(this.props.title)}
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   default: {
     textAlign: 'center',
     color: '#FFFFFF',
-    backgroundColor: '#033BE5',
+    backgroundColor: 'rgba(1,23,90,0.5)',
     margin: 1,
     padding: 12,
     overflow: 'hidden',

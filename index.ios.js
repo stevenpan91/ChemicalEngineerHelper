@@ -13,9 +13,9 @@ import {
 import { StackNavigator } from 'react-navigation';
 
 // Custom Components
-import IosFonts from './app/components/IosFonts/IosFonts';
+import IosFonts from './app/components/IosFonts/IosFonts'; //unused
 import Logo from './app/components/Logo/Logo';
-import Footer from './app/components/Footer/Footer';
+import Footer from './app/components/Footer/Footer'; //unused
 import RouteButton from './app/components/RouteButton/RouteButton';
 
 //Import Scenes
@@ -79,10 +79,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#03D6F3',
-    paddingTop : 40,
+    paddingTop : 5,
   },
   main: {
-    flex: .9,
+    flex: 1,
     justifyContent:'center',
     alignItems: 'center'
   },
