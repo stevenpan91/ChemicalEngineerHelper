@@ -37,16 +37,6 @@ const styles = StyleSheet.create({
     color: 'green',
     backgroundColor: 'yellow',
   },
-  wideButton: {
-    textAlign: 'center',
-    color: '#FFFFFF',
-    backgroundColor: '#033BE5',
-    marginBottom: 5,
-    padding: 12,
-    overflow: 'hidden',
-    borderRadius: 6,
-    marginTop: 2,
-  },
 })
 
 
