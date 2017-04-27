@@ -7,26 +7,59 @@ import React, { Component } from 'react';
 import { 
   AppRegistry, 
   Text, 
+  View, 
+  StyleSheet, 
+  TouchableOpacity } from 'react-native';
+import { StackNavigator } from 'react-navigation';
 
-View, StyleSheet, TouchableOpacity } from 'react-native';
-
+// Custom Components
 import IosFonts from './app/components/IosFonts/IosFonts';
 import Logo from './app/components/Logo/Logo';
 import Footer from './app/components/Footer/Footer';
 
-class ChemEngHelper extends Component {
+//Import Scenes
+import Home from './app/Home';
+import History from './app/History';
+import Settings from './app/Settings';
+
+//Import Individual equations
+import Density from './app/equations/Density'
+import VaporDensity from './app/equations/VaporDensity'
+import ReynoldsNumber from './app/equations/ReynoldsNumber'
+import PipePressureDrop from './app/equations/PipePressureDrop'
+
+// For testing if we can automatically route to equation page if user is logged in.
+userLoggedIn = true;
+
+function wait(ms) {
+  var d = new Date();
+  var d2 = null;
+  do { d2 = new Date(); }
+  while(d2-d < ms);
+}
+
+class Welcome extends Component {
+  static navigationOptions = {
+    title: 'Welcome',
+    rightButton: 'Settings',
+  };
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={styles.main}>
           <Logo style={styles.image}/>
           <Text style={styles.welcome}> Welcome to the Chemical Engineer Helper App!</Text>
           <View style={styles.row}>
-            <TouchableOpacity>
+            <TouchableOpacity 
+            onPress={() => navigate('Home')} 
+            title="Home">
               <Text style={styles.button}>Get Started!</Text>
             </TouchableOpacity>
             <Text> </Text>
-            <TouchableOpacity>
+            <TouchableOpacity 
+            onPress={() => navigate('Home')} 
+            title="Home">
               <Text style={styles.button}>Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -37,6 +70,18 @@ class ChemEngHelper extends Component {
     );
   }
 }
+
+// Declare your routes
+const ChemEngHelper = StackNavigator({
+  Welcome: { screen: Welcome },
+  Home: { screen: Home },
+  History: { screen: History },
+  Settings: { screen: Settings },
+  Density: { screen: Density },
+  "Vapor Density": { screen: VaporDensity },
+  "Reynolds Number": { screen: ReynoldsNumber },
+  "Pipe Pressure Drop":{ screen: PipePressureDrop },
+});
 
 const styles = StyleSheet.create({
   container: {
