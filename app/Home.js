@@ -9,7 +9,7 @@ import {
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
-import RouteButtonWide from './components/RouteButtonWide/RouteButtonWide';
+import RouteButton from './components/RouteButton/RouteButton';
 
 export default class Home extends Component {
   static navigationOptions = {
@@ -19,10 +19,10 @@ export default class Home extends Component {
     const { navigate } = this.props.navigation;
     return (
       <ScrollView style={styles.main}>
-        <RouteButtonWide title="Density" navigate={this.props.navigation} style={styles.test} />
-        <RouteButtonWide title="Vapor Density" navigate={this.props.navigation} />
-        <RouteButtonWide title="Reynolds Number" navigate={this.props.navigation} style={{backgroundColor:'purple'}}/>
-        <RouteButtonWide title="Pipe Pressure Drop" navigate={this.props.navigation} />
+        <RouteButton title="Density" navigate={this.props.navigation} style={styles.test} />
+        <RouteButton title="Vapor Density" navigate={this.props.navigation} />
+        <RouteButton title="Reynolds Number" navigate={this.props.navigation} style={{backgroundColor:'purple'}}/>
+        <RouteButton title="Pipe Pressure Drop" navigate={this.props.navigation} />
       </ScrollView>
     )
   };

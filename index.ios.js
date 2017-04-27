@@ -16,6 +16,7 @@ import { StackNavigator } from 'react-navigation';
 import IosFonts from './app/components/IosFonts/IosFonts';
 import Logo from './app/components/Logo/Logo';
 import Footer from './app/components/Footer/Footer';
+import RouteButton from './app/components/RouteButton/RouteButton';
 
 //Import Scenes
 import Home from './app/Home';
@@ -51,17 +52,8 @@ class Welcome extends Component {
           <Logo style={styles.image}/>
           <Text style={styles.welcome}> Welcome to the Chemical Engineer Helper App!</Text>
           <View style={styles.row}>
-            <TouchableOpacity 
-            onPress={() => navigate('Home')} 
-            title="Home">
-              <Text style={styles.button}>Get Started!</Text>
-            </TouchableOpacity>
-            <Text> </Text>
-            <TouchableOpacity 
-            onPress={() => navigate('Home')} 
-            title="Home">
-              <Text style={styles.button}>Sign In</Text>
-            </TouchableOpacity>
+            <RouteButton title="Home" navigate={this.props.navigation} text="Get Started!" />
+            <RouteButton title="Home" navigate={this.props.navigation} text="Sign In" />
           </View>
           <Text style={styles.quote}> "Quote of Deep thought" </Text>
           <Text style={styles.quote}> - Scientist , 1968 </Text>
