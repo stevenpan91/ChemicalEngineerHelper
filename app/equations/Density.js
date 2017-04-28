@@ -53,27 +53,33 @@ export default class Density extends Component {
     const { navigate } = this.props.navigation;
     const { params } = this.props.navigation.state;
     return (
-      <View style={{flex:1, }}>
-        <View>
-          <Text>Mass : </Text>
+      <View style={styles.container}>
+        <View style={styles.row}>
+          <View style={styles.spacer} />
+          <Text style={styles.textBox}>Mass : </Text>
           <TextInput 
-          style={{height: 40}}
+          style={styles.textBox}
           placeholder="(value)"
           onChangeText={(mass) => this.setState({mass})} />
+          <View style={styles.spacer} />
         </View>
-        <View>
-          <Text>Volume : </Text>
+        <View style={styles.row}>
+          <View style={styles.spacer} />
+          <Text style={styles.textBox}>Volume : </Text>
           <TextInput 
-          style={{height: 40}}
+          style={styles.textBox}
           placeholder="(value)"
           onChangeText={(volume) => this.setState({volume})} />
+          <View style={styles.spacer} />
         </View>
         <View>
           <Button title="Calculate" onPress={()=>this.calcDensity(this.state)} />
         </View>
         <View  style={styles.row}>
-          <Text>Results : </Text>
-          <Text>{ this.state.density }</Text>
+          <View style={styles.spacer} />
+          <Text style={styles.textBox}>Results : </Text>
+          <Text style={styles.textBox}>{ this.state.density }</Text>
+          <View style={styles.spacer} />
         </View>
       </View>
     )
@@ -81,12 +87,25 @@ export default class Density extends Component {
 }
 
 const styles = StyleSheet.create({
-  hard: {
-    color: '#FFFFFF', 
-    fontSize: 100
+  container: {
+    flex: 1,
+    backgroundColor: '#03D6F3',
+    paddingTop : 5,
   },
   row: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent:'space-around',
+  },
+  textBox: {
+    color: '#FFFFFF',
+    flex:0.5,
+    width:80,
+    height:20,
+    margin:20,
+  },
+  spacer: {
+    width:75,
+    height:10
   }
 })
 
