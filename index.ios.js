@@ -9,6 +9,7 @@ import {
   Text, 
   View, 
   StyleSheet, 
+  Button,
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
@@ -40,12 +41,18 @@ function wait(ms) {
 }
 
 class Welcome extends Component {
-  static navigationOptions = {
-    title: 'Welcome',
-    rightButton: 'Settings',
+  static navigationOptions = ({ navigation }) => {
+    const {state, setParams, navigate} = navigation;
+    return {
+      title: 'Welcome',
+      headerRight: <Button 
+      title="Settings" onPress={()=>navigate('Settings')}/>,
+    }
   };
+  
   render() {
     const { navigate } = this.props.navigation;
+    const { params } = this.props.navigation.state;
     return (
       <View style={styles.container}>
         <View style={styles.main}>
