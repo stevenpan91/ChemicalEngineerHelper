@@ -9,6 +9,7 @@ import {
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
+import Divider from '../components/Divider/Divider';
 // Temporary Logic Area 
 /*
 function calcDensity(props){
@@ -56,29 +57,31 @@ export default class Density extends Component {
       <View style={styles.container}>
         <View style={styles.row}>
           <View style={styles.spacer} />
-          <Text style={styles.textBox}>Mass : </Text>
+          <Text style={styles.textBox1}>Mass : </Text>
           <TextInput 
-          style={styles.textBox}
+          style={styles.textBox2}
           placeholder="(value)"
           onChangeText={(mass) => this.setState({mass})} />
           <View style={styles.spacer} />
         </View>
         <View style={styles.row}>
           <View style={styles.spacer} />
-          <Text style={styles.textBox}>Volume : </Text>
+          <Text style={styles.textBox1}>Volume : </Text>
           <TextInput 
-          style={styles.textBox}
+          style={styles.textBox2}
           placeholder="(value)"
           onChangeText={(volume) => this.setState({volume})} />
           <View style={styles.spacer} />
         </View>
+        <Divider style={{backgroundColor: '#FFFFFF'}}/>
         <View>
           <Button title="Calculate" onPress={()=>this.calcDensity(this.state)} />
         </View>
+        <Divider style={{backgroundColor: '#FFFFFF'}}/>
         <View  style={styles.row}>
           <View style={styles.spacer} />
-          <Text style={styles.textBox}>Results : </Text>
-          <Text style={styles.textBox}>{ this.state.density }</Text>
+          <Text style={styles.textBox1}>Results : </Text>
+          <Text style={styles.textBox2}>{ this.state.density }</Text>
           <View style={styles.spacer} />
         </View>
       </View>
@@ -94,17 +97,34 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent:'space-around',
+    justifyContent: 'space-around'
   },
-  textBox: {
-    color: '#FFFFFF',
+  textBox1: {
     flex:0.5,
-    width:80,
+    color: '#FFFFFF',
+    width:100,
     height:20,
     margin:20,
+    fontSize:19,
+  },
+  textBox2: {
+    flex:0.5,
+    color: '#FFFFFF',
+    textAlign: 'right',
+    width:50,
+    height:20,
+    margin:20,
+    fontSize:19,
+  },
+  units:{
+    color: '#FFFFFF',
+    width:10,
+    height:20,
+    margin:20,
+    fontSize:19,
   },
   spacer: {
-    width:75,
+    width:50,
     height:10
   }
 })
