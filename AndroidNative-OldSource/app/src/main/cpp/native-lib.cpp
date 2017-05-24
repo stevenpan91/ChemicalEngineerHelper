@@ -160,12 +160,24 @@ double StringParseConvert (double value,std::string unit, bool toSI){
 
     //Just temperature conversion
     if (numCalcs==0&&(tempunit=="C"||tempunit=="F"||tempunit=="R")){
-        if(tempunit=="C")
-            returnVal=returnVal+273.15;
-        elif(tempunit=="F")
-            returnVal=(5.0/9*(returnVal-32))+273.15;
-        elif(tempunit=="R")
-            returnVal=(5.0/9*returnVal-32-459.67)+273.15;
+
+        if(toSI){
+            if(tempunit=="C")
+                returnVal=returnVal+273.15;
+            elif(tempunit=="F")
+                returnVal=(5.0/9*(returnVal-32))+273.15;
+            elif(tempunit=="R")
+                returnVal=(5.0/9*(returnVal-32-459.67))+273.15;
+        }
+        else{
+            if(tempunit=="C")
+                returnVal=returnVal-273.15;
+            elif(tempunit=="F")
+                returnVal=(9/5.0*(returnVal-273.15))+32.0;
+            elif(tempunit=="R")
+                returnVal=(9/5.0*(returnVal-273.15))+32.0+459.67;
+        }
+
     }
 
     else {

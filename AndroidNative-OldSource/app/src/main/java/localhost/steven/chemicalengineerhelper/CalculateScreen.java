@@ -820,7 +820,7 @@ public class CalculateScreen extends AppCompatActivity {
     public String [][] allUnits={
             {"-","","","",""},
             {"C","K","F","R",""},
-            {"Pa","kPa","bar","atm","psia"},
+            {"Pa","kPa","bar","atm","psi"},
             {"kg","lb","","",""},
             {"m","ft","in","mm",""},
             {"s","hr","day","yr",""}
