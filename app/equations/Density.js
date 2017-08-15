@@ -8,7 +8,8 @@ import {
   StyleSheet, 
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-
+global.inputH = 50;
+global.inputFlex=0.8;
 import Divider from '../components/Divider/Divider';
 // Temporary Logic Area 
 /*
@@ -59,7 +60,7 @@ export default class Density extends Component {
           <View style={styles.spacer} />
           <Text style={styles.textBox1}>Mass : </Text>
           <TextInput 
-          style={styles.textBox2}
+          style={{height:inputH,flex:inputFlex}}
           placeholder="(value)"
           onChangeText={(mass) => this.setState({mass})} />
           <View style={styles.spacer} />
@@ -68,13 +69,13 @@ export default class Density extends Component {
           <View style={styles.spacer} />
           <Text style={styles.textBox1}>Volume : </Text>
           <TextInput 
-          style={styles.textBox2}
+          style={{height:inputH,flex:inputFlex}}
           placeholder="(value)"
           onChangeText={(volume) => this.setState({volume})} />
           <View style={styles.spacer} />
         </View>
         <Divider style={{backgroundColor: '#FFFFFF'}}/>
-        <View>
+        <View >
           <Button title="Calculate" onPress={()=>this.calcDensity(this.state)} />
         </View>
         <Divider style={{backgroundColor: '#FFFFFF'}}/>

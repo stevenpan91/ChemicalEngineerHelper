@@ -285,7 +285,7 @@ double FrictionFactor(double density, double massFlow, double pipeId, double vis
             left = 1 / sqrt(f);
 
             //right term in CW equation
-            right = 2 * log(
+            right = 2 * log10(
                     (eps / (3.7 * d)) +
                     (2.51 / (Re * sqrt(f)))
             );
