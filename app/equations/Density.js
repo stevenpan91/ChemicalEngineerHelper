@@ -11,6 +11,7 @@ import { StackNavigator } from 'react-navigation';
 global.inputH = 50;
 global.inputFlex=0.8;
 import Divider from '../components/Divider/Divider';
+import CalculationClass from '../classes/CalculationClass'
 // Temporary Logic Area 
 /*
 function calcDensity(props){
@@ -51,43 +52,53 @@ export default class Density extends Component {
     };
   }
 
+
   render(){
-    const { navigate } = this.props.navigation;
-    const { params } = this.props.navigation.state;
-    return (
-      <View style={styles.container}>
-        <View style={styles.row}>
-          <View style={styles.spacer} />
-          <Text style={styles.textBox1}>Mass : </Text>
-          <TextInput 
-          style={{height:inputH,flex:inputFlex}}
-          placeholder="(value)"
-          onChangeText={(mass) => this.setState({mass})} />
-          <View style={styles.spacer} />
-        </View>
-        <View style={styles.row}>
-          <View style={styles.spacer} />
-          <Text style={styles.textBox1}>Volume : </Text>
-          <TextInput 
-          style={{height:inputH,flex:inputFlex}}
-          placeholder="(value)"
-          onChangeText={(volume) => this.setState({volume})} />
-          <View style={styles.spacer} />
-        </View>
-        <Divider style={{backgroundColor: '#FFFFFF'}}/>
-        <View >
-          <Button title="Calculate" onPress={()=>this.calcDensity(this.state)} />
-        </View>
-        <Divider style={{backgroundColor: '#FFFFFF'}}/>
-        <View  style={styles.row}>
-          <View style={styles.spacer} />
-          <Text style={styles.textBox1}>Results : </Text>
-          <Text style={styles.textBox2}>{ this.state.density }</Text>
-          <View style={styles.spacer} />
-        </View>
-      </View>
-    )
-  };
+      const { navigate } = this.props.navigation;
+      const { params } = this.props.navigation.state;
+      return (
+        <CalculationClass varLabels={["Mass","Volume"]}/>
+      )
+    };
+
+
+//  render(){
+//    const { navigate } = this.props.navigation;
+//    const { params } = this.props.navigation.state;
+//    return (
+//      <View style={styles.container}>
+//        <View style={styles.row}>
+//          <View style={styles.spacer} />
+//          <Text style={styles.textBox1}>Mass : </Text>
+//          <TextInput
+//          style={{height:inputH,flex:inputFlex}}
+//          placeholder="(value)"
+//          onChangeText={(mass) => this.setState({mass})} />
+//          <View style={styles.spacer} />
+//        </View>
+//        <View style={styles.row}>
+//          <View style={styles.spacer} />
+//          <Text style={styles.textBox1}>Volume : </Text>
+//          <TextInput
+//          style={{height:inputH,flex:inputFlex}}
+//          placeholder="(value)"
+//          onChangeText={(volume) => this.setState({volume})} />
+//          <View style={styles.spacer} />
+//        </View>
+//        <Divider style={{backgroundColor: '#FFFFFF'}}/>
+//        <View >
+//          <Button title="Calculate" onPress={()=>this.calcDensity(this.state)} />
+//        </View>
+//        <Divider style={{backgroundColor: '#FFFFFF'}}/>
+//        <View  style={styles.row}>
+//          <View style={styles.spacer} />
+//          <Text style={styles.textBox1}>Results : </Text>
+//          <Text style={styles.textBox2}>{ this.state.density }</Text>
+//          <View style={styles.spacer} />
+//        </View>
+//      </View>
+//    )
+//  };
 }
 
 const styles = StyleSheet.create({

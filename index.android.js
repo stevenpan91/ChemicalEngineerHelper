@@ -24,6 +24,7 @@ import Density from './app/equations/Density'
 import VaporDensity from './app/equations/VaporDensity'
 import ReynoldsNumber from './app/equations/ReynoldsNumber'
 import PipePressureDrop from './app/equations/PipePressureDrop'
+import CalculationClass from './app/classes/CalculationClass'
 
 // For testing if we can automatically route to equation page if user is logged in.
 userLoggedIn = true;
@@ -75,6 +76,7 @@ const ChemEngHelper = StackNavigator({
   "Vapor Density": { screen: VaporDensity },
   "Reynolds Number": { screen: ReynoldsNumber },
   "Pipe Pressure Drop":{ screen: PipePressureDrop },
+  "Calculation Class": {screen: CalculationClass}
 });
 
 const styles = StyleSheet.create({
