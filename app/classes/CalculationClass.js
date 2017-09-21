@@ -38,22 +38,31 @@ export default class CalculationClass extends Component {
     }
   };
 
-  calcDensity = function(state) {
-    var m = parseFloat(state.cLines[0].input)
-    var v = parseFloat(state.cLines[1].input)
-    var d = m / v
-    this.setState({
-      resultVal: d
-    })
-  }
+//  calcDensity = function(state) {
+//    var m = parseFloat(state.cLines[0].input)
+//    var v = parseFloat(state.cLines[1].input)
+//    var d = m / v
+//    this.setState({
+//      resultVal: d
+//    })
+//  }
+
+
+   updateDisplayResult(newval){
+        this.setState({
+            resultVal:newval
+        })
+   }
 
   constructor(props) {
     super(props);
     this.state = {
 
       varLabels: props.varLabels,
+      calcVals: props.calcVals,
       cLines: [],//[{label:"Mass",input:0},{label:"Volume",input:0}],
-      resultVal: 'N/A',
+      resultVal: 'N/A',//props.calcResult,
+      calcFunction: props.calcFunction
 
     };
     this.initiateLines();
@@ -62,7 +71,8 @@ export default class CalculationClass extends Component {
   //make calc lines
   initiateLines = () => {
         for(let i=0;i<this.state.varLabels.length;i++){
-            this.state.cLines.push({label:this.state.varLabels[index],input:0})
+            this.state.cLines.push({label:this.state.varLabels[index],
+                                    input:this.state.calcVals[index]})
             let temp = index ++
             this.setState({
                 cLines: this.state.cLines
@@ -77,6 +87,7 @@ export default class CalculationClass extends Component {
         this.state.cLines.map((cLine,i) => {
                 var label=cLine.label;
                 var input=cLine.input;
+
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
                 //then change state of copied array
@@ -91,6 +102,8 @@ export default class CalculationClass extends Component {
                             let copyArray=[...this.state.cLines];
                             copyArray[i].input=input;
                             this.setState({copyArray});
+                            this.state.calcFunction(this.state,
+                                                    this.updateDisplayResult.bind(this));
                             }
                          } />
 
@@ -105,9 +118,6 @@ export default class CalculationClass extends Component {
       return (
         <View style={styles.container}>
           { Arr }
-          <TouchableHighlight style={ styles.button } onPress={ () => this.calcDensity(this.state) }>
-              <Text>Calculate</Text>
-          </TouchableHighlight>
           <View  style={styles.row}>
                     <View style={styles.spacer} />
                     <Text style={styles.textBox1}>Results : </Text>

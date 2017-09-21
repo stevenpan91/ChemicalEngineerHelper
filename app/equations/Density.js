@@ -34,13 +34,16 @@ export default class Density extends Component {
     }
   };
 
-  calcDensity = function(state) {
-    var m = parseFloat(state.mass)
-    var v = parseFloat(state.volume)
+  calcDensity = function(state,updateResult) {
+    //var m = parseFloat(state.mass)
+    //var v = parseFloat(state.volume)
+    var m = parseFloat(state.cLines[0].input)
+    var v = parseFloat(state.cLines[1].input)
     var d = m / v
-    this.setState({
-      density: d
-    })
+    //this.setState({
+    //  density:d
+    //})
+    updateResult(d)
   }
 
   constructor(props) {
@@ -50,6 +53,7 @@ export default class Density extends Component {
       volume: '',
       density: 'N/A',
     };
+
   }
 
 
@@ -57,7 +61,10 @@ export default class Density extends Component {
       const { navigate } = this.props.navigation;
       const { params } = this.props.navigation.state;
       return (
-        <CalculationClass varLabels={["Mass","Volume"]}/>
+        <CalculationClass varLabels={["Mass","Volume"]}
+                          calcVals={[this.state.mass,this.state.volume]}
+                          //calcResult={this.state.density}
+                          calcFunction = {this.calcDensity.bind(this)}/>
       )
     };
 
