@@ -49,10 +49,20 @@ export default class CalculationClass extends Component {
 
 
    updateDisplayResult(newval){
-        this.setState({
-            resultVal:newval
-        })
+
+        if(!isNaN(newval)){
+
+            this.setState({
+                resultVal:newval
+            })
+        }
    }
+
+//   componentWillReceiveProps(nextProps){
+//         for(let i=0;i<this.state.varLabels.length;i++){
+//               this.state.cLines[i]=nextProps.varLabels[i];
+//         }
+//   }
 
   constructor(props) {
     super(props);
@@ -65,6 +75,7 @@ export default class CalculationClass extends Component {
       calcFunction: props.calcFunction
 
     };
+
     this.initiateLines();
   }
 
