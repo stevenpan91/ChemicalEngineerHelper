@@ -5,6 +5,7 @@ import {
   AppRegistry,
   Text,
   TextInput,
+  Picker,
   View,
   Button,
   StyleSheet,
@@ -12,7 +13,8 @@ import {
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 global.inputH = 50;
-global.inputFlex=0.8;
+global.inputFlex=0.4;
+global.inputW = 50;
 import Divider from '../components/Divider/Divider';
 // Temporary Logic Area
 /*
@@ -27,7 +29,7 @@ function calcDensity(props){
 // End Temporary Logic Area
 */
 
-var index = 0
+//var index = 0
 export default class CalculationClass extends Component {
   static navigationOptions = ({ navigation }) => {
     const {state, setParams, navigate} = navigation;
@@ -82,9 +84,10 @@ export default class CalculationClass extends Component {
   //make calc lines
   initiateLines = () => {
         for(let i=0;i<this.state.varLabels.length;i++){
-            this.state.cLines.push({label:this.state.varLabels[index],
-                                    input:this.state.calcVals[index]})
-            let temp = index ++
+            this.state.cLines.push({label:this.state.varLabels[i],
+                                    input:this.state.calcVals[i],
+                                    unit: "m"})
+            //let temp = index ++
             this.setState({
                 cLines: this.state.cLines
             })
@@ -98,6 +101,7 @@ export default class CalculationClass extends Component {
         this.state.cLines.map((cLine,i) => {
                 var label=cLine.label;
                 var input=cLine.input;
+                var unit=cLine.unit
 
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
@@ -107,7 +111,7 @@ export default class CalculationClass extends Component {
                      <View style={styles.spacer}/>
                      <Text style={styles.textBox1}> {label} </Text>
                      <TextInput
-                         style={{height:inputH,flex:inputFlex}}
+                         style={{height:inputH,width: inputW, flex:inputFlex}}
                          placeholder="(value)"
                          onChangeText={(input) => {
                             let copyArray=[...this.state.cLines];
@@ -117,6 +121,18 @@ export default class CalculationClass extends Component {
                                                     this.updateDisplayResult.bind(this));
                             }
                          } />
+                     <Picker
+                        style={styles.picker1}
+                        itemStyle={styles.pickerItem1}
+                        selectedValue={unit}
+                          onValueChange={(itemValue, itemIndex) => {
+                            let copyArray=[...this.state.cLines];
+                            copyArray[i].unit=unit;
+                            this.setState({copyArray});
+                            }
+                          }>
+                        <Picker.Item label="m" value="m"/>
+                     </Picker>
 
                      <View style={styles.spacer}/>
                 </View>
@@ -133,6 +149,9 @@ export default class CalculationClass extends Component {
                     <View style={styles.spacer} />
                     <Text style={styles.textBox1}>Results : </Text>
                     <Text style={styles.textBox2}>{ this.state.resultVal }</Text>
+                    <Picker style={styles.picker1}>
+                                            <Picker.Item label="m" value="m"/>
+                                         </Picker>
                     <View style={styles.spacer} />
           </View>
         </View>
@@ -140,6 +159,14 @@ export default class CalculationClass extends Component {
       );
     }
 }
+
+//selectedValue={unit}
+//        onValueChange={(itemValue, itemIndex) => {
+//          let copyArray=[...this.state.cLines];
+//          copyArray[i].unit=unit;
+//          this.setState({copyArray});
+//          }
+//        }
 
 
 const styles = StyleSheet.create({
@@ -160,21 +187,35 @@ const styles = StyleSheet.create({
       justifyContent: 'space-around'
     },
     textBox1: {
-      flex:0.5,
+      flex:0.4,
       color: '#FFFFFF',
+      textAlign: 'left',
       width:100,
       height:20,
-      margin:20,
-      fontSize:19,
+      margin:10,
+      fontSize:16,
     },
     textBox2: {
-      flex:0.5,
+      flex:0.4,
       color: '#FFFFFF',
-      textAlign: 'right',
+      textAlign: 'left',
       width:50,
       height:20,
-      margin:20,
+      margin:10,
       fontSize:19,
+    },
+    picker1:{
+        width:50
+    },
+    pickerItem1:{
+        flex:0.2,
+          //color: '#FFFFFF',
+          color: 'black',
+          textAlign: 'center',
+          width:50,
+          height:50,
+          margin:10,
+          fontSize:16,
     },
     units:{
       color: '#FFFFFF',
@@ -184,7 +225,7 @@ const styles = StyleSheet.create({
       fontSize:19,
     },
     spacer: {
-      width:50,
+      width:20,
       height:10
     }
 });

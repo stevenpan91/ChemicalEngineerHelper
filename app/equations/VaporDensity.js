@@ -50,7 +50,7 @@ export default class VaporDensity extends Component {
     const { navigate } = this.props.navigation;
     const { params } = this.props.navigation.state;
     return (
-            <CalculationClass varLabels={["Pressure (Abs)","Temperature","MW","Z"]}
+            <CalculationClass varLabels={["Press","Temp","MW","Z"]}
                               calcVals={[this.state.pressure,this.state.temperature,this.state.MW,this.state.Z]}
                               //calcResult={this.state.density}
                               calcFunction = {this.calcDensity.bind(this)}/>

@@ -2,6 +2,8 @@ package com.chemenghelper;
 
 import android.app.Application;
 
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -10,6 +12,10 @@ import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
 import java.util.List;
+
+
+
+
 
 public class MainApplication extends Application implements ReactApplication {
 

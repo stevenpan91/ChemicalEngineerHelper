@@ -8,8 +8,8 @@ import {
   StyleSheet, 
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-global.inputH = 50;
-global.inputFlex=0.8;
+//global.inputH = 50;
+//global.inputFlex=0.8;
 import Divider from '../components/Divider/Divider';
 import CalculationClass from '../classes/CalculationClass'
 // Temporary Logic Area 

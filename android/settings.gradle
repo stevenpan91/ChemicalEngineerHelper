@@ -1,3 +1,4 @@
 rootProject.name = 'ChemEngHelper'
 
 include ':app'
+include ':../AndroidNative-OldSource/app'
