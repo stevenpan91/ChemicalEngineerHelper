@@ -39,11 +39,11 @@ export default class Density extends Component {
     //var m = parseFloat(state.mass)
     //var v = parseFloat(state.volume)
     var m = parseFloat(state.cLines[0].input)
-    var munit = state.cLines[0].unit
+    //var munit = state.cLines[0].unit
     var v = parseFloat(state.cLines[1].input)
-    var vunit = state.cLines[0].unit
-    m=CPPConnection.convertToSI(m,munit)
-    v=CPPConnection.convertToSI(v,unit)
+    //var vunit = state.cLines[0].unit
+    //m=CPPConnection.convertToSI(m,munit)
+    //v=CPPConnection.convertToSI(v,unit)
     var d = m / v
     //this.setState({
     //  density:d
@@ -51,64 +51,58 @@ export default class Density extends Component {
     updateResult(d)
   }
 
-  convertUnit=function(value,fromUnit,toUnit){
-          var SIValue=CPPConnection.convertToSI(value,fromUnit);
-          var NewValue=CPPConnection.convertFromSI(SIValue.toUnit);
-    }
+//  convertUnit=function(value,fromUnit,toUnit){
+//          var SIValue=CPPConnection.convertToSI(value,fromUnit);
+//          var NewValue=CPPConnection.convertFromSI(SIValue.toUnit);
+//    }
 
   constructor(props) {
     super(props);
     this.state = {
       mass: '',
-      massUnits:["test"],
+      massUnits:[],
       volume: '',
+      volumeUnits:[],
       density: 'N/A',
     };
-
-    (async()=>{
-        await this.GetDerivedUnits("M");
-    })();
-    //CPPConnection.GetDerivedUnits("M",
-    //                           (msg)=>{console.log(msg);},
-    //                           (unitSet)=>{this.setState({massUnits:unitSet})}
-    //                           );
+    this.GetDerivedUnits("M",this.state.massUnits);
+    this.GetDerivedUnits("L3",this.state.volumeUnits);
   }
 
-  GetDerivedUnits= async (scheme)=>{
-    //try{
-        var{
-            asyncUnitSet
-        } = await CPPConnection.GetDerivedUnits(scheme);
 
-        //let copyArray =[...this.state.massUnits];
-        //copyArray.length=0;
-        var copyArray = this.state.massUnits.slice();
-        copyArray.push('lb');
-        copyArray.push('kg');
+  GetDerivedUnits= async (scheme,unitArray)=>{
+    try{
 
-        //for (let i=0;i<asyncUnitSet.length;i++){
-        //    copyArray.push(asyncUnitSet[i])
-        //}
+        let asyncUnitSet = await CPPConnection.GetDerivedUnits(scheme);
 
-        this.setState({massUnits:copyArray})
+
+        for (let i=0;i<asyncUnitSet.length;i++){
+            unitArray.push(asyncUnitSet[i])
+            this.setState({
+                            unitArray: unitArray
+                        })
+
+        }
+
         console.log(asyncUnitSet);
-    //}catch(e){
-       // console.error(e);
-    //}
+    }catch(e){
+        console.error(e);
+    }
   }
+
 
 
   render(){
       const { navigate } = this.props.navigation;
       const { params } = this.props.navigation.state;
-      (async()=>{
-              await this.GetDerivedUnits("M");
-          })();
+
+
+
       return (
         <CalculationClass varLabels={["Mass","Volume"]}
                           calcVals={[this.state.mass,this.state.volume]}
                           unitSets={[this.state.massUnits,
-                                     ["ft3","m3"]
+                                     this.state.volumeUnits
                                      ]}
                           //calcResult={this.state.density}
                           calcFunction = {this.calcDensity.bind(this)}/>

@@ -134,7 +134,7 @@ export default class CalculationClass extends Component {
                         selectedValue={firstUnit}
                         onValueChange={(itemValue, itemIndex) => {
                                                     let copyArray=[...this.state.cLines];
-                                                    copyArray[i].unit=unit;
+                                                    copyArray[i].unit=itemValue;
                                                     this.setState({copyArray});
                                                     }
                                                   }>

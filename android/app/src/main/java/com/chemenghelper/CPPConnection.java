@@ -47,9 +47,10 @@ public class CPPConnection extends ReactContextBaseJavaModule {
     will add all the possible units to the set
      */
     @ReactMethod
-    public void GetDerivedUnits(String scheme,Promise promise){
+    public void GetDerivedUnits(String scheme,final Promise promise){
+
+
         try {
-            WritableMap map = Arguments.createMap();
 
             List<String> returnSet = new ArrayList<String>();
             //Set first value so that there is a lead value
@@ -129,20 +130,16 @@ public class CPPConnection extends ReactContextBaseJavaModule {
                 promiseArray.pushString(returnArray[i]);
             }
 
-            map.putArray("returnArray",promiseArray);
-            promise.resolve(map);
+            promise.resolve(promiseArray);
 
-            //successCallback.invoke(returnArray);
         }
         catch(Exception e){
-            //errorCallback.invoke(e.getMessage());
             promise.reject(e);
         }
 
-        //return returnArray;
+//        //return returnArray;
     }
 
-    @ReactMethod
     public void SetLastDerivedUnit(List<DerivedUnitHelper> HelpUnits, int position, String tempUnit, String tempPower){
         //Process previous
         HelpUnits.add(new DerivedUnitHelper());
@@ -182,7 +179,7 @@ public class CPPConnection extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
+
     public String [][] allUnits={
             {"-","","","",""},
             {"C","K","F","R",""},
