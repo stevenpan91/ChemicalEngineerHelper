@@ -25,6 +25,7 @@ import VaporDensity from './app/equations/VaporDensity'
 import ReynoldsNumber from './app/equations/ReynoldsNumber'
 import PipePressureDrop from './app/equations/PipePressureDrop'
 import CalculationClass from './app/classes/CalculationClass'
+import CPPConnection from './app/classes/CPPConnection'
 
 // For testing if we can automatically route to equation page if user is logged in.
 userLoggedIn = true;

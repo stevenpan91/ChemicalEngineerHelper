@@ -12,6 +12,7 @@ import { StackNavigator } from 'react-navigation';
 //global.inputFlex=0.8;
 import Divider from '../components/Divider/Divider';
 import CalculationClass from '../classes/CalculationClass'
+import CPPConnection from '../classes/CPPConnection'
 // Temporary Logic Area 
 /*
 function calcDensity(props){
@@ -38,7 +39,11 @@ export default class Density extends Component {
     //var m = parseFloat(state.mass)
     //var v = parseFloat(state.volume)
     var m = parseFloat(state.cLines[0].input)
+    var munit = state.cLines[0].unit
     var v = parseFloat(state.cLines[1].input)
+    var vunit = state.cLines[0].unit
+    m=CPPConnection.convertToSI(m,munit)
+    v=CPPConnection.convertToSI(v,unit)
     var d = m / v
     //this.setState({
     //  density:d
@@ -46,66 +51,71 @@ export default class Density extends Component {
     updateResult(d)
   }
 
+  convertUnit=function(value,fromUnit,toUnit){
+          var SIValue=CPPConnection.convertToSI(value,fromUnit);
+          var NewValue=CPPConnection.convertFromSI(SIValue.toUnit);
+    }
+
   constructor(props) {
     super(props);
     this.state = {
       mass: '',
+      massUnits:["test"],
       volume: '',
       density: 'N/A',
     };
 
+    (async()=>{
+        await this.GetDerivedUnits("M");
+    })();
+    //CPPConnection.GetDerivedUnits("M",
+    //                           (msg)=>{console.log(msg);},
+    //                           (unitSet)=>{this.setState({massUnits:unitSet})}
+    //                           );
+  }
+
+  GetDerivedUnits= async (scheme)=>{
+    //try{
+        var{
+            asyncUnitSet
+        } = await CPPConnection.GetDerivedUnits(scheme);
+
+        //let copyArray =[...this.state.massUnits];
+        //copyArray.length=0;
+        var copyArray = this.state.massUnits.slice();
+        copyArray.push('lb');
+        copyArray.push('kg');
+
+        //for (let i=0;i<asyncUnitSet.length;i++){
+        //    copyArray.push(asyncUnitSet[i])
+        //}
+
+        this.setState({massUnits:copyArray})
+        console.log(asyncUnitSet);
+    //}catch(e){
+       // console.error(e);
+    //}
   }
 
 
   render(){
       const { navigate } = this.props.navigation;
       const { params } = this.props.navigation.state;
+      (async()=>{
+              await this.GetDerivedUnits("M");
+          })();
       return (
         <CalculationClass varLabels={["Mass","Volume"]}
                           calcVals={[this.state.mass,this.state.volume]}
+                          unitSets={[this.state.massUnits,
+                                     ["ft3","m3"]
+                                     ]}
                           //calcResult={this.state.density}
                           calcFunction = {this.calcDensity.bind(this)}/>
       )
     };
 
 
-//  render(){
-//    const { navigate } = this.props.navigation;
-//    const { params } = this.props.navigation.state;
-//    return (
-//      <View style={styles.container}>
-//        <View style={styles.row}>
-//          <View style={styles.spacer} />
-//          <Text style={styles.textBox1}>Mass : </Text>
-//          <TextInput
-//          style={{height:inputH,flex:inputFlex}}
-//          placeholder="(value)"
-//          onChangeText={(mass) => this.setState({mass})} />
-//          <View style={styles.spacer} />
-//        </View>
-//        <View style={styles.row}>
-//          <View style={styles.spacer} />
-//          <Text style={styles.textBox1}>Volume : </Text>
-//          <TextInput
-//          style={{height:inputH,flex:inputFlex}}
-//          placeholder="(value)"
-//          onChangeText={(volume) => this.setState({volume})} />
-//          <View style={styles.spacer} />
-//        </View>
-//        <Divider style={{backgroundColor: '#FFFFFF'}}/>
-//        <View >
-//          <Button title="Calculate" onPress={()=>this.calcDensity(this.state)} />
-//        </View>
-//        <Divider style={{backgroundColor: '#FFFFFF'}}/>
-//        <View  style={styles.row}>
-//          <View style={styles.spacer} />
-//          <Text style={styles.textBox1}>Results : </Text>
-//          <Text style={styles.textBox2}>{ this.state.density }</Text>
-//          <View style={styles.spacer} />
-//        </View>
-//      </View>
-//    )
-//  };
 }
 
 const styles = StyleSheet.create({

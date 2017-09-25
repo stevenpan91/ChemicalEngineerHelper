@@ -6,16 +6,19 @@ import {
   Text,
   TextInput,
   Picker,
+  Item,
   View,
   Button,
   StyleSheet,
   TouchableHighlight,
-  TouchableOpacity } from 'react-native';
+  TouchableOpacity} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 global.inputH = 50;
 global.inputFlex=0.4;
 global.inputW = 50;
 import Divider from '../components/Divider/Divider';
+import CPPConnection from '../classes/CPPConnection'
+
 // Temporary Logic Area
 /*
 function calcDensity(props){
@@ -29,7 +32,6 @@ function calcDensity(props){
 // End Temporary Logic Area
 */
 
-//var index = 0
 export default class CalculationClass extends Component {
   static navigationOptions = ({ navigation }) => {
     const {state, setParams, navigate} = navigation;
@@ -60,11 +62,6 @@ export default class CalculationClass extends Component {
         }
    }
 
-//   componentWillReceiveProps(nextProps){
-//         for(let i=0;i<this.state.varLabels.length;i++){
-//               this.state.cLines[i]=nextProps.varLabels[i];
-//         }
-//   }
 
   constructor(props) {
     super(props);
@@ -72,6 +69,7 @@ export default class CalculationClass extends Component {
 
       varLabels: props.varLabels,
       calcVals: props.calcVals,
+      unitSets: props.unitSets,
       cLines: [],//[{label:"Mass",input:0},{label:"Volume",input:0}],
       resultVal: 'N/A',//props.calcResult,
       calcFunction: props.calcFunction
@@ -86,22 +84,30 @@ export default class CalculationClass extends Component {
         for(let i=0;i<this.state.varLabels.length;i++){
             this.state.cLines.push({label:this.state.varLabels[i],
                                     input:this.state.calcVals[i],
-                                    unit: "m"})
-            //let temp = index ++
+                                    unitSet:this.state.unitSets[i]})
             this.setState({
                 cLines: this.state.cLines
             })
         }
   }
 
+  convertUnit=function(value,fromUnit,toUnit){
+        var SIValue=CPPConnection.convertToSI(value,fromUnit);
+        var NewValue=CPPConnection.convertFromSI(SIValue.toUnit);
+  }
+
+
     render() {
-      //const { navigate } = this.props.navigation;
-      //const { params } = this.props.navigation.state;
         let Arr=[];
         this.state.cLines.map((cLine,i) => {
                 var label=cLine.label;
                 var input=cLine.input;
-                var unit=cLine.unit
+
+                let unitSet = cLine.unitSet.map((item,unitkey) => {
+                    return <Picker.Item key={unitkey} value={item} label={item}/>
+                });
+                var firstUnit=unitSet[0];
+
 
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
@@ -124,14 +130,15 @@ export default class CalculationClass extends Component {
                      <Picker
                         style={styles.picker1}
                         itemStyle={styles.pickerItem1}
-                        selectedValue={unit}
-                          onValueChange={(itemValue, itemIndex) => {
-                            let copyArray=[...this.state.cLines];
-                            copyArray[i].unit=unit;
-                            this.setState({copyArray});
-                            }
-                          }>
-                        <Picker.Item label="m" value="m"/>
+                        mode="dropdown"
+                        selectedValue={firstUnit}
+                        onValueChange={(itemValue, itemIndex) => {
+                                                    let copyArray=[...this.state.cLines];
+                                                    copyArray[i].unit=unit;
+                                                    this.setState({copyArray});
+                                                    }
+                                                  }>
+                        {unitSet}
                      </Picker>
 
                      <View style={styles.spacer}/>
@@ -141,6 +148,14 @@ export default class CalculationClass extends Component {
 
         })
 
+
+//onValueChange={(itemValue, itemIndex) => {
+//                            let copyArray=[...this.state.cLines];
+//                            copyArray[i].unit=unit;
+//                            this.setState({copyArray});
+//                            }
+//                          }>
+//                        <Picker.Item label="m" value="m"/>
 
       return (
         <View style={styles.container}>
