@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import {
+  Alert,
   AppRegistry,
   Text,
   TextInput,
@@ -70,30 +71,76 @@ export default class CalculationClass extends Component {
       varLabels: props.varLabels,
       calcVals: props.calcVals,
       unitSets: props.unitSets,
+      resultUnitSet: props.resultUnitSet,
+      resultUnitSetArray:[],
       cLines: [],//[{label:"Mass",input:0},{label:"Volume",input:0}],
       resultVal: 'N/A',//props.calcResult,
       calcFunction: props.calcFunction
 
     };
 
+    this.GetDerivedUnits(this.state.resultUnitSet,this.state.resultUnitSetArray)
+
     this.initiateLines();
   }
+
+  GetDerivedUnits= async (scheme,unitArray)=>{
+      try{
+          let asyncUnitSet = await CPPConnection.GetDerivedUnits(scheme);
+          for (let i=0;i<asyncUnitSet.length;i++){
+              unitArray.push(asyncUnitSet[i])
+              this.setState({
+                              unitArray: unitArray
+                          })
+          }
+          console.log(asyncUnitSet);
+      }catch(e){
+          console.error(e);
+      }
+    }
 
   //make calc lines
   initiateLines = () => {
         for(let i=0;i<this.state.varLabels.length;i++){
+
+
             this.state.cLines.push({label:this.state.varLabels[i],
                                     input:this.state.calcVals[i],
-                                    unitSet:this.state.unitSets[i]})
+                                    unitSet:[]
+                                    //unitSet:this.state.unitSets[i]
+                                    })
+            this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet)
             this.setState({
                 cLines: this.state.cLines
             })
         }
   }
 
+  convertToSI=async(value,fromUnit,callBack)=>{
+        var SIValue=await CPPConnection.CPPConvertToSI(value,fromUnit);
+        callBack(SIValue);
+  }
+
+  convertFromSI=async(value,toUnit,callBack)=>{
+        var NewValue=await CPPConnection.CPPConvertFromSI(value,toUnit);
+        callBack(NewValue);
+  }
+
+
+
   convertUnit=function(value,fromUnit,toUnit){
-        var SIValue=CPPConnection.convertToSI(value,fromUnit);
-        var NewValue=CPPConnection.convertFromSI(SIValue.toUnit);
+
+        var SIValue=function(val){return val;};//=await CPPConnection.ConvertToSI(value,fromUnit);
+        var NewValue=function(val){return val;};
+
+        this.convertToSI(value,fromUnit,SIValue);
+
+        Alert.alert('Try Call',SIValue);
+
+        this.convertFromSI(SIValue,toUnit,NewValue);
+
+        //return NewValue;
+        //return 0;
   }
 
 
@@ -107,6 +154,7 @@ export default class CalculationClass extends Component {
                     return <Picker.Item key={unitkey} value={item} label={item}/>
                 });
                 var firstUnit=unitSet[0];
+                var prevUnit = firstUnit;
 
 
                 //take the label and input from cLine then push it into the array
@@ -132,10 +180,13 @@ export default class CalculationClass extends Component {
                         itemStyle={styles.pickerItem1}
                         mode="dropdown"
                         selectedValue={firstUnit}
-                        onValueChange={(itemValue, itemIndex) => {
-                                                    let copyArray=[...this.state.cLines];
-                                                    copyArray[i].unit=itemValue;
-                                                    this.setState({copyArray});
+                        onValueChange={(newUnit, newUnitIndex) => {
+                                                    //let copyArray=[...this.state.cLines];
+                                                    this.convertUnit(10,"ft","m");
+                                                    //let testVal=this.convertUnit(parseFloat(copyArray[i].input),prevUnit,newUnit)
+                                                    //copyArray[i].input=this.convertUnit(parseFloat(copyArray[i].input),prevUnit,newUnit)
+                                                    //copyArray[i].unit=itemValue;
+                                                    //this.setState({copyArray});
                                                     }
                                                   }>
                         {unitSet}
@@ -148,6 +199,11 @@ export default class CalculationClass extends Component {
 
         })
 
+
+      let resultUnitSet = this.state.resultUnitSetArray.map((item,unitkey) => {
+                          return <Picker.Item key={unitkey} value={item} label={item}/>
+                      });
+      var firstResultUnit=resultUnitSet[0];
 
 //onValueChange={(itemValue, itemIndex) => {
 //                            let copyArray=[...this.state.cLines];
@@ -164,9 +220,12 @@ export default class CalculationClass extends Component {
                     <View style={styles.spacer} />
                     <Text style={styles.textBox1}>Results : </Text>
                     <Text style={styles.textBox2}>{ this.state.resultVal }</Text>
-                    <Picker style={styles.picker1}>
-                                            <Picker.Item label="m" value="m"/>
-                                         </Picker>
+                    <Picker style={styles.picker1}
+                            itemStyle={styles.pickerItem1}
+                            mode="dropdown"
+                            selectedValue={firstResultUnit}>
+                                            {resultUnitSet}
+                    </Picker>
                     <View style={styles.spacer} />
           </View>
         </View>
@@ -228,9 +287,9 @@ const styles = StyleSheet.create({
           color: 'black',
           textAlign: 'center',
           width:50,
-          height:50,
+          height:40,
           margin:10,
-          fontSize:16,
+          fontSize:12,
     },
     units:{
       color: '#FFFFFF',

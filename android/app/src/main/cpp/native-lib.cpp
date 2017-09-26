@@ -231,6 +231,7 @@ Java_com_chemenghelper_CPPConnection_convertToSI(
     return (jdouble) result;
 }
 
+
 extern "C"
 jdouble
 Java_com_chemenghelper_CPPConnection_convertFromSI(

@@ -19,6 +19,8 @@ add_library( # Specifies the name of the library.
              # Provides a relative path to your source file(s).
              src/main/cpp/native-lib.cpp )
 
+include_directories(src/main/cpp/)
+
 find_library( # Defines the name of the path variable that stores the
            # location of the NDK library.
            log-lib

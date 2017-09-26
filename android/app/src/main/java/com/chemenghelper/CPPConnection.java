@@ -28,11 +28,24 @@ public class CPPConnection extends ReactContextBaseJavaModule {
         return "CPPConnection";
     }
 
-    @ReactMethod
+
     public native double convertToSI(double value, String unit);
 
-    @ReactMethod
+
     public native double convertFromSI(double value, String unit);
+
+    @ReactMethod
+    public void CPPConvertToSI(double value, String unit, final Promise promise){
+        double retVal = convertToSI(value,unit);
+        //double retVal=40.2;
+        promise.resolve(retVal);
+    }
+
+    @ReactMethod
+    public void CPPConvertFromSI(double value, String unit, final Promise promise){
+        double retVal = convertFromSI(value,unit);
+        promise.resolve(retVal);
+    }
 
 
     public class DerivedUnitHelper{

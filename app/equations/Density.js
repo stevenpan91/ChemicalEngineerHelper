@@ -60,38 +60,20 @@ export default class Density extends Component {
     super(props);
     this.state = {
       mass: '',
-      massUnits:[],
       volume: '',
-      volumeUnits:[],
       density: 'N/A',
     };
-    this.GetDerivedUnits("M",this.state.massUnits);
-    this.GetDerivedUnits("L3",this.state.volumeUnits);
+
   }
 
-
-  GetDerivedUnits= async (scheme,unitArray)=>{
-    try{
-
-        let asyncUnitSet = await CPPConnection.GetDerivedUnits(scheme);
-
-
-        for (let i=0;i<asyncUnitSet.length;i++){
-            unitArray.push(asyncUnitSet[i])
-            this.setState({
-                            unitArray: unitArray
-                        })
-
-        }
-
-        console.log(asyncUnitSet);
-    }catch(e){
-        console.error(e);
-    }
-  }
-
-
-
+  //Use custom component CalculationClass
+  //attributes:
+  //    varLabels - the text used to guide the reader on what to input
+  //    calcVals - initial values in the TextInput if there are any
+  //    unitSets - use scheme to set unit set. This was migrated from Java native
+  //                M: mass, L: length, Z: time, T: temperature, P: pressure
+  //                for example L3 is volume (mass cubed)
+  //    calcFunction - pass the bound function to calculate the result
   render(){
       const { navigate } = this.props.navigation;
       const { params } = this.props.navigation.state;
@@ -101,9 +83,8 @@ export default class Density extends Component {
       return (
         <CalculationClass varLabels={["Mass","Volume"]}
                           calcVals={[this.state.mass,this.state.volume]}
-                          unitSets={[this.state.massUnits,
-                                     this.state.volumeUnits
-                                     ]}
+                          unitSets={["M","L3"]}
+                          resultUnitSet={"M/L3"}
                           //calcResult={this.state.density}
                           calcFunction = {this.calcDensity.bind(this)}/>
       )
