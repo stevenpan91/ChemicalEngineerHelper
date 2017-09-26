@@ -106,13 +106,15 @@ export default class CalculationClass extends Component {
 
             this.state.cLines.push({label:this.state.varLabels[i],
                                     input:this.state.calcVals[i],
-                                    unitSet:[]
+                                    unitSet:[],
+                                    thisUnit:''
                                     //unitSet:this.state.unitSets[i]
-                                    })
-            this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet)
+                                    });
+            this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet);
+            this.state.cLines[i].thisUnit=this.state.cLines[i].unitSet[0];
             this.setState({
                 cLines: this.state.cLines
-            })
+            });
         }
   }
 
@@ -124,23 +126,16 @@ export default class CalculationClass extends Component {
   convertFromSI=async(value,toUnit,callBack)=>{
         var NewValue=await CPPConnection.CPPConvertFromSI(value,toUnit);
         callBack(NewValue);
+
   }
 
 
 
-  convertUnit=function(value,fromUnit,toUnit){
+  convertUnit=async(value,fromUnit,toUnit,callBack)=>{
+        var SIValue=await CPPConnection.CPPConvertToSI(value,fromUnit);
+        var NewValue=await CPPConnection.CPPConvertFromSI(SIValue,toUnit);
+        callBack(NewValue);
 
-        var SIValue=function(val){return val;};//=await CPPConnection.ConvertToSI(value,fromUnit);
-        var NewValue=function(val){return val;};
-
-        this.convertToSI(value,fromUnit,SIValue);
-
-        Alert.alert('Try Call',SIValue);
-
-        this.convertFromSI(SIValue,toUnit,NewValue);
-
-        //return NewValue;
-        //return 0;
   }
 
 
@@ -153,8 +148,9 @@ export default class CalculationClass extends Component {
                 let unitSet = cLine.unitSet.map((item,unitkey) => {
                     return <Picker.Item key={unitkey} value={item} label={item}/>
                 });
-                var firstUnit=unitSet[0];
-                var prevUnit = firstUnit;
+                var thisUnit=cLine.thisUnit;
+                //var firstUnit=unitSet[0];
+                //var prevUnit = firstUnit;
 
 
                 //take the label and input from cLine then push it into the array
@@ -174,19 +170,23 @@ export default class CalculationClass extends Component {
                             this.state.calcFunction(this.state,
                                                     this.updateDisplayResult.bind(this));
                             }
-                         } />
+                         } >{input}</TextInput>
                      <Picker
                         style={styles.picker1}
                         itemStyle={styles.pickerItem1}
                         mode="dropdown"
-                        selectedValue={firstUnit}
+                        selectedValue={thisUnit}
                         onValueChange={(newUnit, newUnitIndex) => {
-                                                    //let copyArray=[...this.state.cLines];
-                                                    this.convertUnit(10,"ft","m");
-                                                    //let testVal=this.convertUnit(parseFloat(copyArray[i].input),prevUnit,newUnit)
-                                                    //copyArray[i].input=this.convertUnit(parseFloat(copyArray[i].input),prevUnit,newUnit)
-                                                    //copyArray[i].unit=itemValue;
-                                                    //this.setState({copyArray});
+
+
+                                                    this.convertUnit(parseFloat(input),thisUnit,newUnit,
+                                                      function (val){
+                                                      let copyArray=[...this.state.cLines];
+                                                      copyArray[i].input=val;
+                                                      copyArray[i].thisUnit=newUnit;
+                                                      this.setState({copyArray});
+                                                          }.bind(this));
+
                                                     }
                                                   }>
                         {unitSet}
