@@ -15,7 +15,7 @@ import {
   TouchableOpacity} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 global.inputH = 50;
-global.inputFlex=0.4;
+global.inputFlex=0.33;
 global.inputW = 50;
 import Divider from '../components/Divider/Divider';
 import CPPConnection from '../classes/CPPConnection'
@@ -54,7 +54,7 @@ export default class CalculationClass extends Component {
 
 
    updateDisplayResult(newval){
-
+        Alert.alert('Return value is',''+newval);
         if(!isNaN(newval)){
 
             this.setState({
@@ -100,17 +100,22 @@ export default class CalculationClass extends Component {
     }
 
   //make calc lines
-  initiateLines = () => {
+  initiateLines = async () => {
         for(let i=0;i<this.state.varLabels.length;i++){
 
 
             this.state.cLines.push({label:this.state.varLabels[i],
                                     input:this.state.calcVals[i],
+                                    displayInput:this.state.calcVals[i],
+                                    SIInput:'',
                                     unitSet:[],
                                     thisUnit:''
                                     //unitSet:this.state.unitSets[i]
                                     });
-            this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet);
+            await this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet);
+            //let copyArray=[...this.state.cLines];
+            //copyArray[i].thisUnit=copyArray[i].unitSet[0];
+            //this.setState({copyArray});
             this.state.cLines[i].thisUnit=this.state.cLines[i].unitSet[0];
             this.setState({
                 cLines: this.state.cLines
@@ -142,16 +147,16 @@ export default class CalculationClass extends Component {
     render() {
         let Arr=[];
         this.state.cLines.map((cLine,i) => {
+                //set variables bound to different array elements of Calc Lines
                 var label=cLine.label;
                 var input=cLine.input;
-
+                var displayInput=cLine.displayInput;
                 let unitSet = cLine.unitSet.map((item,unitkey) => {
                     return <Picker.Item key={unitkey} value={item} label={item}/>
                 });
                 var thisUnit=cLine.thisUnit;
-                //var firstUnit=unitSet[0];
-                //var prevUnit = firstUnit;
 
+                //Alert.alert('checkUnit',thisUnit);
 
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
@@ -163,14 +168,39 @@ export default class CalculationClass extends Component {
                      <TextInput
                          style={{height:inputH,width: inputW, flex:inputFlex}}
                          placeholder="(value)"
-                         onChangeText={(input) => {
-                            let copyArray=[...this.state.cLines];
-                            copyArray[i].input=input;
-                            this.setState({copyArray});
-                            this.state.calcFunction(this.state,
-                                                    this.updateDisplayResult.bind(this));
+                         onChangeText={(newValue) => {
+                            Alert.alert('New Val',newValue);
+                            if(newValue && !isNaN(parseFloat(newValue)) && isFinite(newValue)){
+                                //let copyArray=[...this.state.cLines];
+                                //copyArray[i].input=newValue; //set input of Calc Line to new value
+                                //copyArray[i].displayInput=''+newValue; //set display to new value
+                                this.convertToSI(parseFloat(newValue),thisUnit,
+                                              function (val){
+                                              let copyArray=[...this.state.cLines];
+                                              copyArray[i].input=newValue; //set input of Calc Line to new value
+                                              copyArray[i].displayInput=''+newValue; //set display to new value
+                                              copyArray[i].SIInput=val;
+                                              this.setState({copyArray});
+                                              this.state.calcFunction(this.state,    //do calculation
+                                                   this.updateDisplayResult.bind(this));
+                                                  }.bind(this));
+
+                                //this.setState({copyArray});            //update calc line attributes
+                                //this.state.calcFunction(this.state,    //do calculation
+                                                         //this.updateDisplayResult.bind(this));
+
                             }
-                         } >{input}</TextInput>
+                            else{
+
+                                this.setState({resultVal: 'N/A'})      //if input is not valid no calculation to be done
+                                                                       //update the result value to 'N/A'
+
+                            }
+                         }
+
+
+
+                         } >{displayInput}</TextInput>
                      <Picker
                         style={styles.picker1}
                         itemStyle={styles.pickerItem1}
@@ -178,17 +208,20 @@ export default class CalculationClass extends Component {
                         selectedValue={thisUnit}
                         onValueChange={(newUnit, newUnitIndex) => {
 
-
-                                                    this.convertUnit(parseFloat(input),thisUnit,newUnit,
-                                                      function (val){
-                                                      let copyArray=[...this.state.cLines];
-                                                      copyArray[i].input=val;
-                                                      copyArray[i].thisUnit=newUnit;
-                                                      this.setState({copyArray});
-                                                          }.bind(this));
-
+                                                    if(input && !isNaN(parseFloat(input)) && isFinite(input)){
+                                                        this.convertUnit(parseFloat(input),thisUnit,newUnit,
+                                                          function (val){
+                                                          let copyArray=[...this.state.cLines];
+                                                          copyArray[i].input=val;
+                                                          copyArray[i].displayInput=''+val.toFixed(4);
+                                                          copyArray[i].thisUnit=newUnit;
+                                                          this.setState({copyArray});
+                                                          this.state.calcFunction(this.state,
+                                                                                  this.updateDisplayResult.bind(this));
+                                                              }.bind(this));
                                                     }
-                                                  }>
+                                                }
+                                              }>
                         {unitSet}
                      </Picker>
 
@@ -204,14 +237,6 @@ export default class CalculationClass extends Component {
                           return <Picker.Item key={unitkey} value={item} label={item}/>
                       });
       var firstResultUnit=resultUnitSet[0];
-
-//onValueChange={(itemValue, itemIndex) => {
-//                            let copyArray=[...this.state.cLines];
-//                            copyArray[i].unit=unit;
-//                            this.setState({copyArray});
-//                            }
-//                          }>
-//                        <Picker.Item label="m" value="m"/>
 
       return (
         <View style={styles.container}>
@@ -234,14 +259,6 @@ export default class CalculationClass extends Component {
     }
 }
 
-//selectedValue={unit}
-//        onValueChange={(itemValue, itemIndex) => {
-//          let copyArray=[...this.state.cLines];
-//          copyArray[i].unit=unit;
-//          this.setState({copyArray});
-//          }
-//        }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -261,7 +278,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-around'
     },
     textBox1: {
-      flex:0.4,
+      flex:0.33,
       color: '#FFFFFF',
       textAlign: 'left',
       width:100,
@@ -270,7 +287,7 @@ const styles = StyleSheet.create({
       fontSize:16,
     },
     textBox2: {
-      flex:0.4,
+      flex:0.33,
       color: '#FFFFFF',
       textAlign: 'left',
       width:50,
@@ -279,15 +296,15 @@ const styles = StyleSheet.create({
       fontSize:19,
     },
     picker1:{
-        width:50
+        width:60
     },
     pickerItem1:{
-        flex:0.2,
+        flex:0.33,
           //color: '#FFFFFF',
           color: 'black',
           textAlign: 'center',
           width:50,
-          height:40,
+          height:50,
           margin:10,
           fontSize:12,
     },

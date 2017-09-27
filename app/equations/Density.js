@@ -4,7 +4,8 @@ import {
   Text, 
   TextInput,
   View,
-  Button, 
+  Button,
+  Alert,
   StyleSheet, 
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
@@ -38,9 +39,10 @@ export default class Density extends Component {
   calcDensity = function(state,updateResult) {
     //var m = parseFloat(state.mass)
     //var v = parseFloat(state.volume)
-    var m = parseFloat(state.cLines[0].input)
+    var m = parseFloat(state.cLines[0].SIInput)
     //var munit = state.cLines[0].unit
-    var v = parseFloat(state.cLines[1].input)
+    var v = parseFloat(state.cLines[1].SIInput)
+    Alert.alert('Volume is',''+v);
     //var vunit = state.cLines[0].unit
     //m=CPPConnection.convertToSI(m,munit)
     //v=CPPConnection.convertToSI(v,unit)
