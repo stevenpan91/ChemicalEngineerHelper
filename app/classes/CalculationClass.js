@@ -54,12 +54,14 @@ export default class CalculationClass extends Component {
 
 
    updateDisplayResult(newval){
-        Alert.alert('Return value is',''+newval);
-        if(!isNaN(newval)){
 
-            this.setState({
-                resultVal:newval
-            })
+        if(!isNaN(newval)){
+             let copyArray=[...this.state.rLine];
+             copyArray[i].resultVal=newval;
+             this.setState({copyArray});
+            //this.setState({
+            //    resultVal:newval
+            //})
         }
    }
 
@@ -72,14 +74,13 @@ export default class CalculationClass extends Component {
       calcVals: props.calcVals,
       unitSets: props.unitSets,
       resultUnitSet: props.resultUnitSet,
-      resultUnitSetArray:[],
+      //resultUnitSetArray:[],
       cLines: [],//[{label:"Mass",input:0},{label:"Volume",input:0}],
-      resultVal: 'N/A',//props.calcResult,
+      rLine: [],
+      //resultVal: 'N/A',//props.calcResult,
       calcFunction: props.calcFunction
 
     };
-
-    this.GetDerivedUnits(this.state.resultUnitSet,this.state.resultUnitSetArray)
 
     this.initiateLines();
   }
@@ -121,6 +122,19 @@ export default class CalculationClass extends Component {
                 cLines: this.state.cLines
             });
         }
+
+        this.state.rLine.push({label:'Results',
+                               resultVal:'N/A',
+                               unitSet:[],
+                               thisUnit:''})
+
+        await this.GetDerivedUnits(this.state.resultUnitSet,this.state.rLine[0].unitSet)
+        this.state.rLine[0].thisUnit=this.state.rLine[0].unitSet[0];
+        this.setState({
+            rLine:this.state.rLine
+        });
+
+
   }
 
   convertToSI=async(value,fromUnit,callBack)=>{
@@ -156,7 +170,6 @@ export default class CalculationClass extends Component {
                 });
                 var thisUnit=cLine.thisUnit;
 
-                //Alert.alert('checkUnit',thisUnit);
 
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
@@ -169,11 +182,8 @@ export default class CalculationClass extends Component {
                          style={{height:inputH,width: inputW, flex:inputFlex}}
                          placeholder="(value)"
                          onChangeText={(newValue) => {
-                            Alert.alert('New Val',newValue);
+                            //check new input is numeric and not null
                             if(newValue && !isNaN(parseFloat(newValue)) && isFinite(newValue)){
-                                //let copyArray=[...this.state.cLines];
-                                //copyArray[i].input=newValue; //set input of Calc Line to new value
-                                //copyArray[i].displayInput=''+newValue; //set display to new value
                                 this.convertToSI(parseFloat(newValue),thisUnit,
                                               function (val){
                                               let copyArray=[...this.state.cLines];
@@ -184,10 +194,6 @@ export default class CalculationClass extends Component {
                                               this.state.calcFunction(this.state,    //do calculation
                                                    this.updateDisplayResult.bind(this));
                                                   }.bind(this));
-
-                                //this.setState({copyArray});            //update calc line attributes
-                                //this.state.calcFunction(this.state,    //do calculation
-                                                         //this.updateDisplayResult.bind(this));
 
                             }
                             else{
@@ -227,32 +233,60 @@ export default class CalculationClass extends Component {
 
                      <View style={styles.spacer}/>
                 </View>
-               )
+               )//end of Arr push
 
 
         })
 
+      let rArr=[];
+      this.state.rLine.map((rLine,i) => {
 
-      let resultUnitSet = this.state.resultUnitSetArray.map((item,unitkey) => {
-                          return <Picker.Item key={unitkey} value={item} label={item}/>
-                      });
-      var firstResultUnit=resultUnitSet[0];
+          var resultlabel=rLine.label;
+          var resultVal=rLine.resultVal;
+          let resultUnitSet = rLine.unitSet.map((item,unitkey) => {
+                              return <Picker.Item key={unitkey} value={item} label={item}/>
+                          });
+          var resultUnit=rLine.thisUnit;
+
+          rArr.push(
+                <View  style={styles.row}>
+                      <View style={styles.spacer} />
+                      <Text style={styles.textBox1}>Results : </Text>
+                      <Text style={styles.textBox2}>{ resultVal }</Text>
+                      <Picker style={styles.picker1}
+                              itemStyle={styles.pickerItem1}
+                              mode="dropdown"
+                              selectedValue={resultUnit}
+                              onValueChange={(newUnit, newUnitIndex) => {
+                                                     if(resultVal && !isNaN(parseFloat(resultVal)) && isFinite(resultVal)){
+                                                         this.convertUnit(parseFloat(resultVal),resultUnit,newUnit,
+                                                           function (val){
+                                                           let copyArray=[...this.state.rLine];
+                                                           //copyArray[i].input=val;
+                                                           //copyArray[i].displayInput=''+val.toFixed(4);
+                                                           //copyArray[i].thisUnit=newUnit;
+                                                           copyArray[i].thisUnit=newUnit;
+                                                           copyArray[i].resultVal=val;
+                                                           this.setState({copyArray});
+                                                           //this.state.calcFunction(this.state,
+                                                           //                        this.updateDisplayResult.bind(this));
+                                                          }.bind(this));
+                                                     }
+                                                 }
+                                               }>
+                                              {resultUnitSet}
+                      </Picker>
+                      <View style={styles.spacer} />
+                </View>
+
+          )//end of rArr push
+
+      })
 
       return (
         <View style={styles.container}>
           { Arr }
-          <View  style={styles.row}>
-                    <View style={styles.spacer} />
-                    <Text style={styles.textBox1}>Results : </Text>
-                    <Text style={styles.textBox2}>{ this.state.resultVal }</Text>
-                    <Picker style={styles.picker1}
-                            itemStyle={styles.pickerItem1}
-                            mode="dropdown"
-                            selectedValue={firstResultUnit}>
-                                            {resultUnitSet}
-                    </Picker>
-                    <View style={styles.spacer} />
-          </View>
+          { rArr}
         </View>
 
       );
