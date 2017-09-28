@@ -182,6 +182,9 @@ public class CPPConnection extends ReactContextBaseJavaModule {
             case "Z":
                 unitIndex=5;
                 break;
+            default:
+                unitIndex=0;
+                break;
         }
         lastDH.unitSet= Arrays.copyOf(allUnits[unitIndex],allUnits[unitIndex].length);
 

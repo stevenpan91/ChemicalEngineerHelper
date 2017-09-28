@@ -9,8 +9,6 @@ import {
   StyleSheet, 
   TouchableOpacity } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-//global.inputH = 50;
-//global.inputFlex=0.8;
 import Divider from '../components/Divider/Divider';
 import CalculationClass from '../classes/CalculationClass'
 import CPPConnection from '../classes/CPPConnection'
@@ -39,18 +37,11 @@ export default class Density extends Component {
   calcDensity = function(state,updateResult) {
     var m = parseFloat(state.cLines[0].SIInput)
     var v = parseFloat(state.cLines[1].SIInput)
-    //m=CPPConnection.convertToSI(m,munit)
     var d = m / v
-    //this.setState({
-    //  density:d
-    //})
     updateResult(d)
   }
 
-//  convertUnit=function(value,fromUnit,toUnit){
-//          var SIValue=CPPConnection.convertToSI(value,fromUnit);
-//          var NewValue=CPPConnection.convertFromSI(SIValue.toUnit);
-//    }
+
 
   constructor(props) {
     super(props);

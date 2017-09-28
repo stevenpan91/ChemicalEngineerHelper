@@ -21,10 +21,10 @@ export default class VaporDensity extends Component {
   };
 
   calcDensity = function(state,updateResult) {
-      var pressure = parseFloat(state.cLines[0].input)
-      var temperature = parseFloat(state.cLines[1].input)
-      var MW=parseFloat(state.cLines[2].input)
-      var Z=parseFloat(state.cLines[3].input)
+      var pressure = parseFloat(state.cLines[0].SIInput)
+      var temperature = parseFloat(state.cLines[1].SIInput)
+      var MW=parseFloat(state.cLines[2].SIInput)
+      var Z=parseFloat(state.cLines[3].SIInput)
 
       var rho = pressure*MW/1000/temperature/Z/8.314;
 
@@ -52,6 +52,8 @@ export default class VaporDensity extends Component {
     return (
             <CalculationClass varLabels={["Press","Temp","MW","Z"]}
                               calcVals={[this.state.pressure,this.state.temperature,this.state.MW,this.state.Z]}
+                              unitSets={["P","T","",""]}
+                              resultUnitSet={"M/L3"}
                               //calcResult={this.state.density}
                               calcFunction = {this.calcDensity.bind(this)}/>
           )

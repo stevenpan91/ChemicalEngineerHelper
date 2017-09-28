@@ -43,25 +43,26 @@ export default class CalculationClass extends Component {
     }
   };
 
-//  calcDensity = function(state) {
-//    var m = parseFloat(state.cLines[0].input)
-//    var v = parseFloat(state.cLines[1].input)
-//    var d = m / v
-//    this.setState({
-//      resultVal: d
-//    })
-//  }
 
 
    updateDisplayResult(newval){
 
-        if(!isNaN(newval)){
-             let copyArray=[...this.state.rLine];
-             copyArray[i].resultVal=newval;
-             this.setState({copyArray});
-            //this.setState({
-            //    resultVal:newval
-            //})
+        if(newval && !isNaN(newval) && isFinite(newval)){
+             this.state.rLine.map((rLine,i) => {
+                 this.convertFromSI(newval,rLine.thisUnit,
+                    function(val){
+                        //Update result Line if value is actually a number
+                        let copyArray=[...this.state.rLine];
+                        copyArray[0].resultVal=val;
+                        this.setState({copyArray});
+                    }.bind(this));
+             })
+        }
+        else{
+            //Otherwise return text N/A
+            let copyArray=[...this.state.rLine];
+            copyArray[0].resultVal='N/A';
+            this.setState({copyArray});
         }
    }
 
@@ -74,10 +75,8 @@ export default class CalculationClass extends Component {
       calcVals: props.calcVals,
       unitSets: props.unitSets,
       resultUnitSet: props.resultUnitSet,
-      //resultUnitSetArray:[],
-      cLines: [],//[{label:"Mass",input:0},{label:"Volume",input:0}],
+      cLines: [],
       rLine: [],
-      //resultVal: 'N/A',//props.calcResult,
       calcFunction: props.calcFunction
 
     };
@@ -85,6 +84,7 @@ export default class CalculationClass extends Component {
     this.initiateLines();
   }
 
+  //call Java method GetDerivedUnits. Use scheme such as "M" for mass and "L3" for Length^3 (Volume) and get set of units
   GetDerivedUnits= async (scheme,unitArray)=>{
       try{
           let asyncUnitSet = await CPPConnection.GetDerivedUnits(scheme);
@@ -104,7 +104,7 @@ export default class CalculationClass extends Component {
   initiateLines = async () => {
         for(let i=0;i<this.state.varLabels.length;i++){
 
-
+        //Set calculation input lines
             this.state.cLines.push({label:this.state.varLabels[i],
                                     input:this.state.calcVals[i],
                                     displayInput:this.state.calcVals[i],
@@ -114,22 +114,24 @@ export default class CalculationClass extends Component {
                                     //unitSet:this.state.unitSets[i]
                                     });
             await this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet);
-            //let copyArray=[...this.state.cLines];
-            //copyArray[i].thisUnit=copyArray[i].unitSet[0];
-            //this.setState({copyArray});
-            this.state.cLines[i].thisUnit=this.state.cLines[i].unitSet[0];
+            if(this.state.cLines[i].unitSet.length>0){
+                this.state.cLines[i].thisUnit=this.state.cLines[i].unitSet[0];
+            }
             this.setState({
                 cLines: this.state.cLines
             });
         }
 
+        //Set result line
         this.state.rLine.push({label:'Results',
                                resultVal:'N/A',
                                unitSet:[],
                                thisUnit:''})
 
         await this.GetDerivedUnits(this.state.resultUnitSet,this.state.rLine[0].unitSet)
-        this.state.rLine[0].thisUnit=this.state.rLine[0].unitSet[0];
+        if(this.state.rLine[0].unitSet.length>0){
+            this.state.rLine[0].thisUnit=this.state.rLine[0].unitSet[0];
+        }
         this.setState({
             rLine:this.state.rLine
         });
@@ -137,11 +139,13 @@ export default class CalculationClass extends Component {
 
   }
 
+  //call C++ method convertToSI
   convertToSI=async(value,fromUnit,callBack)=>{
         var SIValue=await CPPConnection.CPPConvertToSI(value,fromUnit);
         callBack(SIValue);
   }
 
+  //call C++ method convertFromSI
   convertFromSI=async(value,toUnit,callBack)=>{
         var NewValue=await CPPConnection.CPPConvertFromSI(value,toUnit);
         callBack(NewValue);
@@ -149,7 +153,7 @@ export default class CalculationClass extends Component {
   }
 
 
-
+  //Convert from one unit to another using C++ methods
   convertUnit=async(value,fromUnit,toUnit,callBack)=>{
         var SIValue=await CPPConnection.CPPConvertToSI(value,fromUnit);
         var NewValue=await CPPConnection.CPPConvertFromSI(SIValue,toUnit);
@@ -186,19 +190,26 @@ export default class CalculationClass extends Component {
                             if(newValue && !isNaN(parseFloat(newValue)) && isFinite(newValue)){
                                 this.convertToSI(parseFloat(newValue),thisUnit,
                                               function (val){
-                                              let copyArray=[...this.state.cLines];
-                                              copyArray[i].input=newValue; //set input of Calc Line to new value
-                                              copyArray[i].displayInput=''+newValue; //set display to new value
-                                              copyArray[i].SIInput=val;
-                                              this.setState({copyArray});
-                                              this.state.calcFunction(this.state,    //do calculation
-                                                   this.updateDisplayResult.bind(this));
-                                                  }.bind(this));
+                                                  let copyArray=[...this.state.cLines];
+                                                  copyArray[i].input=newValue; //set input of Calc Line to new value
+                                                  copyArray[i].displayInput=''+newValue; //set display to new value
+                                                  copyArray[i].SIInput=val;
+                                                  this.setState({copyArray});
+                                                  this.state.calcFunction(this.state,    //do calculation
+                                                       this.updateDisplayResult.bind(this));
+                                              }.bind(this));
 
                             }
                             else{
+                                //reset input values
+                                let copyArray=[...this.state.cLines];
+                                copyArray[i].input=''; //set input of Calc Line to new value
+                                copyArray[i].SIInput='';
+                                this.setState({copyArray});
 
-                                this.setState({resultVal: 'N/A'})      //if input is not valid no calculation to be done
+                                //reset result display
+                                this.updateDisplayResult(NaN);
+                                //this.setState({resultVal: 'N/A'})      //if input is not valid no calculation to be done
                                                                        //update the result value to 'N/A'
 
                             }
@@ -213,18 +224,24 @@ export default class CalculationClass extends Component {
                         mode="dropdown"
                         selectedValue={thisUnit}
                         onValueChange={(newUnit, newUnitIndex) => {
-
+                                                    //if this input value is a number then recalculate
                                                     if(input && !isNaN(parseFloat(input)) && isFinite(input)){
                                                         this.convertUnit(parseFloat(input),thisUnit,newUnit,
                                                           function (val){
-                                                          let copyArray=[...this.state.cLines];
-                                                          copyArray[i].input=val;
-                                                          copyArray[i].displayInput=''+val.toFixed(4);
-                                                          copyArray[i].thisUnit=newUnit;
-                                                          this.setState({copyArray});
-                                                          this.state.calcFunction(this.state,
-                                                                                  this.updateDisplayResult.bind(this));
-                                                              }.bind(this));
+                                                              let copyArray=[...this.state.cLines];
+                                                              copyArray[i].input=val;
+                                                              copyArray[i].displayInput=''+val.toFixed(4);
+                                                              copyArray[i].thisUnit=newUnit;
+                                                              this.setState({copyArray});
+                                                              this.state.calcFunction(this.state,
+                                                                                      this.updateDisplayResult.bind(this));
+                                                          }.bind(this));
+                                                    }
+                                                    //otherwise just set the unit
+                                                    else{
+                                                        let copyArray=[...this.state.cLines];
+                                                        copyArray[i].thisUnit=newUnit;
+                                                        this.setState({copyArray});
                                                     }
                                                 }
                                               }>
@@ -258,19 +275,21 @@ export default class CalculationClass extends Component {
                               mode="dropdown"
                               selectedValue={resultUnit}
                               onValueChange={(newUnit, newUnitIndex) => {
+                                                     //if result value is a number convert it and set new unit
                                                      if(resultVal && !isNaN(parseFloat(resultVal)) && isFinite(resultVal)){
                                                          this.convertUnit(parseFloat(resultVal),resultUnit,newUnit,
                                                            function (val){
                                                            let copyArray=[...this.state.rLine];
-                                                           //copyArray[i].input=val;
-                                                           //copyArray[i].displayInput=''+val.toFixed(4);
-                                                           //copyArray[i].thisUnit=newUnit;
                                                            copyArray[i].thisUnit=newUnit;
                                                            copyArray[i].resultVal=val;
                                                            this.setState({copyArray});
-                                                           //this.state.calcFunction(this.state,
-                                                           //                        this.updateDisplayResult.bind(this));
                                                           }.bind(this));
+                                                     }
+                                                     //else just update the result unit
+                                                     else{
+                                                          let copyArray=[...this.state.rLine];
+                                                          copyArray[i].thisUnit=newUnit;
+                                                          this.setState({copyArray});
                                                      }
                                                  }
                                                }>
@@ -327,10 +346,10 @@ const styles = StyleSheet.create({
       width:50,
       height:20,
       margin:10,
-      fontSize:19,
+      fontSize:16,
     },
     picker1:{
-        width:60
+        width:90
     },
     pickerItem1:{
         flex:0.33,
