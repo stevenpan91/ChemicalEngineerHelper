@@ -54,6 +54,7 @@ export default class VaporDensity extends Component {
                               calcVals={[this.state.pressure,this.state.temperature,this.state.MW,this.state.Z]}
                               unitSets={["P","T","",""]}
                               resultUnitSet={"M/L3"}
+                              inputHelperSchemes={["","","",""]}
                               //calcResult={this.state.density}
                               calcFunction = {this.calcDensity.bind(this)}/>
           )

@@ -72,6 +72,7 @@ export default class Density extends Component {
                           calcVals={[this.state.mass,this.state.volume]}
                           unitSets={["M","L3"]}
                           resultUnitSet={"M/L3"}
+                          inputHelperSchemes={["",""]}
                           //calcResult={this.state.density}
                           calcFunction = {this.calcDensity.bind(this)}/>
       )
