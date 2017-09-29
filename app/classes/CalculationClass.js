@@ -15,7 +15,7 @@ import {
   TouchableOpacity} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 global.inputH = 50;
-global.inputFlex=0.33;
+global.inputFlex=0.3;
 global.inputW = 50;
 import Divider from '../components/Divider/Divider';
 import CPPConnection from '../classes/CPPConnection'
@@ -77,6 +77,7 @@ export default class CalculationClass extends Component {
       resultUnitSet: props.resultUnitSet,
       cLines: [],
       rLine: [],
+      inputHelperSchemes: [],
       calcFunction: props.calcFunction
 
     };
@@ -110,7 +111,8 @@ export default class CalculationClass extends Component {
                                     displayInput:this.state.calcVals[i],
                                     SIInput:'',
                                     unitSet:[],
-                                    thisUnit:''
+                                    thisUnit:'',
+                                    inputHelperScheme:this.state.inputHelperSchemes[i]
                                     //unitSet:this.state.unitSets[i]
                                     });
             await this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet);
@@ -161,6 +163,17 @@ export default class CalculationClass extends Component {
 
   }
 
+  helperModal=function(scheme){
+
+        if(scheme=="Pipe"){
+            Alert.alert('Arrived','Arrived');
+            return <Button style={styles.helperButton}>Test</Button>;
+
+        }else{
+            return;
+        }
+  }
+
 
     render() {
         let Arr=[];
@@ -173,7 +186,9 @@ export default class CalculationClass extends Component {
                     return <Picker.Item key={unitkey} value={item} label={item}/>
                 });
                 var thisUnit=cLine.thisUnit;
-
+                var inputHelperScheme=cLine.inputHelperScheme;
+                let inputHelpArr=[];
+                inputHelpArr.push(this.helperModal(inputHelperScheme));
 
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
@@ -247,7 +262,7 @@ export default class CalculationClass extends Component {
                                               }>
                         {unitSet}
                      </Picker>
-
+                     {inputHelpArr}
                      <View style={styles.spacer}/>
                 </View>
                )//end of Arr push
@@ -326,21 +341,31 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
 
+    helperButton: {
+      flex:0.1,
+      height:20,
+      width:30,
+      backgroundColor: '#ededed',
+      marginTop:10,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+
     row: {
       flexDirection: 'row',
       justifyContent: 'space-around'
     },
     textBox1: {
-      flex:0.33,
+      flex:0.3,
       color: '#FFFFFF',
       textAlign: 'left',
-      width:100,
+      width:150,
       height:20,
       margin:10,
       fontSize:16,
     },
     textBox2: {
-      flex:0.33,
+      flex:0.3,
       color: '#FFFFFF',
       textAlign: 'left',
       width:50,
@@ -352,7 +377,7 @@ const styles = StyleSheet.create({
         width:90
     },
     pickerItem1:{
-        flex:0.33,
+        flex:0.3,
           //color: '#FFFFFF',
           color: 'black',
           textAlign: 'center',

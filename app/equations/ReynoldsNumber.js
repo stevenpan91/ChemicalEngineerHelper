@@ -20,14 +20,15 @@ export default class ReynoldsNumber extends Component {
   };
 
   calcReynolds = function(state,updateResult) {
-     var d = parseFloat(state.cLines[0].SIInput)
-     var mfr = parseFloat(state.cLines[1].SIInput)
-     var pid = parseFloat(state.cLines[2].SIInput)
-     var visc = parseFloat(state.cLines[3].SIInput)
+     var d = parseFloat(state.cLines[0].SIInput);
+     var mfr = parseFloat(state.cLines[1].SIInput);
+     var pid = parseFloat(state.cLines[2].SIInput);
+     var visc = parseFloat(state.cLines[3].SIInput);
 
-     var vel = mfr/d/(Math.PI*Math.pow(pid,2)/4)
+     var vel = mfr/d/(Math.PI*Math.pow(pid,2)/4);
 
-     updateResult(vel)
+     var Re = vel*d*pid/visc;
+     updateResult(Re)
   }
 
   constructor(props) {
@@ -49,8 +50,9 @@ export default class ReynoldsNumber extends Component {
       <CalculationClass varLabels={["Density","Mass Flow", "Pipe ID", "Viscosity"]}
                                 calcVals={[this.state.density,this.state.mass_flow_rate,
                                            this.state.pipe_id,this.state.viscosity]}
-                                unitSets={["M/L3","M/Z2","L","P*Z"]}
+                                unitSets={["M/L3","M/Z","L","P*Z"]}
                                 resultUnitSet={""}
+                                inputHelperSchemes={["","","Pipe",""]}
                                 //calcResult={this.state.density}
                                 calcFunction = {this.calcReynolds.bind(this)}/>
     )
