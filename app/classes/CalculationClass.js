@@ -77,7 +77,7 @@ export default class CalculationClass extends Component {
       resultUnitSet: props.resultUnitSet,
       cLines: [],
       rLine: [],
-      inputHelperSchemes: [],
+      inputHelperSchemes: props.inputHelperSchemes,
       calcFunction: props.calcFunction
 
     };
@@ -167,10 +167,10 @@ export default class CalculationClass extends Component {
 
         if(scheme=="Pipe"){
             Alert.alert('Arrived','Arrived');
-            return <Button style={styles.helperButton}>Test</Button>;
+            return <Button title="Test" style={styles.helperButton}/>;
 
         }else{
-            return;
+            return <View style={styles.helperSpacer}/>;
         }
   }
 
@@ -187,8 +187,8 @@ export default class CalculationClass extends Component {
                 });
                 var thisUnit=cLine.thisUnit;
                 var inputHelperScheme=cLine.inputHelperScheme;
-                let inputHelpArr=[];
-                inputHelpArr.push(this.helperModal(inputHelperScheme));
+                //let inputHelpArr=[];
+                //inputHelpArr.push(this.helperModal(inputHelperScheme));
 
                 //take the label and input from cLine then push it into the array
                 //for the ontext change in TextInput, copy the cLine array, change something
@@ -262,7 +262,7 @@ export default class CalculationClass extends Component {
                                               }>
                         {unitSet}
                      </Picker>
-                     {inputHelpArr}
+                     {this.helperModal(inputHelperScheme)}
                      <View style={styles.spacer}/>
                 </View>
                )//end of Arr push
@@ -346,10 +346,16 @@ const styles = StyleSheet.create({
       height:20,
       width:30,
       backgroundColor: '#ededed',
-      marginTop:10,
+      //marginTop:10,
       justifyContent: 'center',
       alignItems: 'center'
     },
+    helperSpacer: {
+          flex:0.1,
+          height:20,
+          width:30
+
+        },
 
     row: {
       flexDirection: 'row',
