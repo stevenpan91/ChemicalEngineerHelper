@@ -9,6 +9,7 @@ import {
   Picker,
   Item,
   View,
+  Modal,
   Button,
   StyleSheet,
   TouchableHighlight,
@@ -112,7 +113,8 @@ export default class CalculationClass extends Component {
                                     SIInput:'',
                                     unitSet:[],
                                     thisUnit:'',
-                                    inputHelperScheme:this.state.inputHelperSchemes[i]
+                                    inputHelperScheme:this.state.inputHelperSchemes[i],
+                                    modalVisible:false
                                     //unitSet:this.state.unitSets[i]
                                     });
             await this.GetDerivedUnits(this.state.unitSets[i],this.state.cLines[i].unitSet);
@@ -163,14 +165,166 @@ export default class CalculationClass extends Component {
 
   }
 
-  helperModal=function(scheme){
+  helperModal=function(scheme,cLineKey){
 
         if(scheme=="Pipe"){
-            Alert.alert('Arrived','Arrived');
-            return <Button title="Test" style={styles.helperButton}/>;
+            return <Button title="..."
+                           onPress={()=>{
+                               let copyArray=[...this.state.cLines];
+                               copyArray[cLineKey].modalVisible=true;
+                               this.setState({copyArray});
+
+                           }}
+                           style={styles.helperButton}/>;
 
         }else{
             return <View style={styles.helperSpacer}/>;
+        }
+  }
+
+
+
+  openPipeHelp=function(scheme,cLineKey){
+        if(scheme=="Pipe"){
+            var NPSSizes=["1/8","1/4","3/8","1/2","3/4","1","1 1/4","1 1/2", "2", "2 1/2", "3", "3 1/2",
+                        "4","4 1/2", "5", "6", "7", "8", "9", "10", "12", "14", "16", "18", "20", "22", "24",
+                        "26","28","30","32","34","36","40","42","44","46","48","52","56","60","64","68","72"];
+            let NPSSizesSet = NPSSizes.map((item,unitkey) => {
+                                return <Picker.Item key={unitkey} value={item} label={item}/>
+                            });
+
+
+            var PipeSchedules=["5s","5","10s","10","20","30","40s","STD","40","60","80s","80","XS","100","120","140","160","XXS"];
+            let PipeSchedulesSet = PipeSchedules.map((item,unitkey) => {
+                                            return <Picker.Item key={unitkey} value={item} label={item}/>
+                                        });
+
+            var SelectedNPSS;
+            var SelectedPS;
+
+            var NPSindex;
+            var Schedindex;
+            var outerDiameter;
+            var wallThickness;
+
+            var innerDiameter;
+
+            updateID=function(NPSindex,Schedindex){
+                 if(NPSindex && !isNaN(NPSindex) && isFinite(NPSindex)){
+                        outerDiameter = NPSOD[NPSindex];
+                        if(Schedindex && !isNaN(Schedindex) && isFinite(Schedindex)){
+                            wallThickness = NPSWallThickness[NPSindex][Schedindex];
+                            innerDiameter=outerDiameter-2*wallThickness
+                        }
+                 }
+
+            }
+
+
+
+
+            //    innerDiameter = convertToSI(innerDiameter, "mm");
+            //    innerDiameter = convertFromSI(innerDiameter, calcLine.PopupPage.resultDropDown
+            //            .getSelectedItem().toString());
+
+
+            return (<Modal
+                      animationType="slide"
+                      transparent={false}
+                      visible={this.state.cLines[cLineKey].modalVisible}
+                      onRequestClose={() => {
+                                               //let copyArray=[...this.state.cLines];
+                                               //copyArray[cLineKey].modalVisible=false;
+                                               //this.setState({copyArray});
+                                            }
+                                     }
+                      >
+                      <View style={styles.container}>
+                        <View style={styles.row}>
+                            <Text style={{flex:0.5,
+                                            color: 'black',
+                                            textAlign: 'center',
+                                            width:50,
+                                            height:50,
+                                            margin:10,
+                                            fontSize:19}}
+                            >Test1
+                            </Text>
+                            <Picker
+                                            style={{
+                                                           flex:0.5,
+                                                           width:90,
+                                                           height:50
+                                                       }}
+                                            itemStyle={styles.pickerItem1}
+                                            mode="dropdown"
+                                            selectedValue={''}
+                                            onValueChange={(newVal, newValIndex) => {
+                                                            SelectedNPSS=newVal;
+                                                            NPSindex=newValIndex;
+                                                            updateID();
+
+
+                                                            }}>
+                                            {NPSSizesSet}
+                                    </Picker>
+
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={{flex:0.5,
+                                            color: 'black',
+                                            textAlign: 'center',
+                                            width:50,
+                                            height:50,
+                                            margin:10,
+                                            fontSize:19}}
+                            >Test2
+                            </Text>
+
+                            <Picker
+                                    style={{
+                                               flex:0.5,
+                                               width:90,
+                                               height:50
+                                           }}
+                                    itemStyle={styles.pickerItem1}
+                                    mode="dropdown"
+                                    selectedValue={''}
+                                    onValueChange={(newVal, newValIndex) => {
+                                                    SelectedPS=newVal;
+                                                    Schedindex=newValIndex;}}>
+                                    {PipeSchedulesSet}
+                            </Picker>
+
+
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={{flex:0.5,
+                                            color: 'black',
+                                            textAlign: 'center',
+                                            width:50,
+                                            height:50,
+                                            margin:10,
+                                            fontSize:19}}
+                            >Test2
+                            </Text>
+                        </View>
+
+
+                        <Button title="Confirm"
+                                       onPress={()=>{
+                                           let copyArray=[...this.state.cLines];
+                                           copyArray[cLineKey].modalVisible=false;
+                                           this.setState({copyArray});
+
+                                       }}
+                                       style={styles.button}/>
+                      </View>
+
+                    </Modal>
+                    ); //return Modal
+        }else{
+            return;
         }
   }
 
@@ -187,6 +341,7 @@ export default class CalculationClass extends Component {
                 });
                 var thisUnit=cLine.thisUnit;
                 var inputHelperScheme=cLine.inputHelperScheme;
+                var modalVisible = cLine.modalVisible;
                 //let inputHelpArr=[];
                 //inputHelpArr.push(this.helperModal(inputHelperScheme));
 
@@ -195,7 +350,7 @@ export default class CalculationClass extends Component {
                 //then change state of copied array
                 Arr.push(
                <View key={i} style={styles.row}>
-                     <View style={styles.spacer}/>
+
                      <Text style={styles.textBox1}> {label} </Text>
                      <TextInput
                          style={{height:inputH,width: inputW, flex:inputFlex}}
@@ -262,8 +417,8 @@ export default class CalculationClass extends Component {
                                               }>
                         {unitSet}
                      </Picker>
-                     {this.helperModal(inputHelperScheme)}
-                     <View style={styles.spacer}/>
+                     {this.helperModal(inputHelperScheme,i)}
+                     {this.openPipeHelp(inputHelperScheme,i)}
                 </View>
                )//end of Arr push
 
@@ -282,7 +437,6 @@ export default class CalculationClass extends Component {
 
           rArr.push(
                 <View  style={styles.row}>
-                      <View style={styles.spacer} />
                       <Text style={styles.textBox1}>Results : </Text>
                       <Text style={styles.textBox2}>{ resultVal }</Text>
                       <Picker style={styles.picker1}
@@ -342,9 +496,9 @@ const styles = StyleSheet.create({
   },
 
     helperButton: {
-      flex:0.1,
+      flex:0.10,
       height:20,
-      width:30,
+      width:20,
       backgroundColor: '#ededed',
       //marginTop:10,
       justifyContent: 'center',
@@ -352,8 +506,8 @@ const styles = StyleSheet.create({
     },
     helperSpacer: {
           flex:0.1,
-          height:20,
-          width:30
+          height:10,
+          width:20
 
         },
 
@@ -365,7 +519,7 @@ const styles = StyleSheet.create({
       flex:0.3,
       color: '#FFFFFF',
       textAlign: 'left',
-      width:150,
+      width:100,
       height:20,
       margin:10,
       fontSize:16,
@@ -380,16 +534,18 @@ const styles = StyleSheet.create({
       fontSize:16,
     },
     picker1:{
-        width:90
+        flex:0.3,
+        width:90,
+        height:50
     },
     pickerItem1:{
-        flex:0.3,
+
           //color: '#FFFFFF',
           color: 'black',
           textAlign: 'center',
-          width:50,
-          height:50,
-          margin:10,
+          //width:50,
+          //height:50,
+          //margin:10,
           fontSize:12,
     },
     units:{
