@@ -297,7 +297,7 @@ export default class CalculationClass extends Component {
                                                      height:50,
                                                      margin:10,
                                                      fontSize:19}}
-                                     >{innerDiameter.toFixed(6)}
+                                     >{innerDiameter}
                                      </Text>
                                  </View>
 
@@ -306,6 +306,8 @@ export default class CalculationClass extends Component {
                                                 onPress={()=>{
                                                     let copyArray=[...this.state.cLines];
                                                     copyArray[i].modalVisible=false;
+                                                    copyArray[i].input=innerDiameter;
+                                                    copyArray[i].displayInput=''+innerDiameter;
                                                     this.setState({copyArray});
 
                                                 }}
@@ -522,7 +524,7 @@ export default class CalculationClass extends Component {
            var wallThickness = NPSWallThickness[NPSindex][Schedindex];
 
            if(wallThickness!=null){
-                copyArray[0].innerDiameter=outerDiameter-(2*wallThickness);
+                copyArray[0].innerDiameter=(outerDiameter-(2*wallThickness)).toFixed(6);
            }
            else{
                 copyArray[0].innerDiameter='N/A';
