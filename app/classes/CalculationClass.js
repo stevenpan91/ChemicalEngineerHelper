@@ -9,6 +9,7 @@ import {
   Picker,
   Item,
   View,
+  ScrollView,
   Modal,
   Button,
   StyleSheet,
@@ -19,7 +20,8 @@ global.inputH = 50;
 global.inputFlex=0.3;
 global.inputW = 50;
 import Divider from '../components/Divider/Divider';
-import CPPConnection from '../classes/CPPConnection'
+import CPPConnection from '../classes/CPPConnection';
+import cf from '../modules/CEHFunctions';
 
 // Temporary Logic Area
 /*
@@ -107,11 +109,11 @@ export default class CalculationClass extends Component {
         for(let i=0;i<this.state.varLabels.length;i++){
 
         //Set calculation input lines
-
+        //Assume that the initial value if given is in SI units (therefore SIInput is set to the same value as input
             this.state.cLines.push({label:this.state.varLabels[i],
                                     input:this.state.calcVals[i],
-                                    displayInput:this.state.calcVals[i],
-                                    SIInput:'',
+                                    displayInput:this.state.calcVals[i]+'',
+                                    SIInput:this.state.calcVals[i],
                                     unitSet:[],
                                     thisUnit:'',
                                     inputHelperScheme:this.state.inputHelperSchemes[i],
@@ -124,7 +126,8 @@ export default class CalculationClass extends Component {
                 this.state.cLines[i].thisUnit=this.state.cLines[i].unitSet[0];
             }
             if(this.state.inputHelperSchemes[i]=="Pipe"){
-                this.state.cLines[i].inputHelper.push({SelectedNPSS:'',SelectedPS:'', NPSindex:0, Schedindex:0, innerDiameter:(10.26-2*0.889)});
+                this.state.cLines[i].inputHelper.push({SelectedNPSS:'',SelectedPS:'', NPSindex:0, Schedindex:0, innerDiameter:(10.26-2*0.889), lengthUnitSet:[], SelectedLUnit:'m'});
+                await this.GetDerivedUnits("L",this.state.cLines[i].inputHelper[0].lengthUnitSet)
             }
             this.setState({
                 cLines: this.state.cLines
@@ -215,7 +218,10 @@ export default class CalculationClass extends Component {
                          var NPSindex=helper.NPSindex;
                          var Schedindex=helper.Schedindex;
                          var innerDiameter=helper.innerDiameter;
-
+                         let lengthUnitSet=helper.lengthUnitSet.map((item,unitkey) => {
+                                        return <Picker.Item key={unitkey} value={item} label={item}/>
+                                });
+                         var SelectedLUnit=helper.SelectedLUnit;
 
                          //    innerDiameter = convertToSI(innerDiameter, "mm");
                          //    innerDiameter = convertFromSI(innerDiameter, calcLine.PopupPage.resultDropDown
@@ -299,16 +305,45 @@ export default class CalculationClass extends Component {
                                                      fontSize:19}}
                                      >{innerDiameter}
                                      </Text>
+                                     <Picker
+                                              style={{
+                                                             flex:0.5,
+                                                             width:90,
+                                                             height:50
+                                                         }}
+                                              itemStyle={styles.pickerItem1}
+                                              mode="dropdown"
+                                              selectedValue={SelectedLUnit}
+                                              onValueChange={(newVal, newValIndex) => {
+                                                                    if(cf.CheckNumeric(innerDiameter)){
+                                                                          this.convertUnit(parseFloat(innerDiameter),SelectedLUnit,newVal,
+                                                                                        function (val){
+                                                                                            let copyArray=[...this.state.cLines[i].inputHelper];
+                                                                                            copyArray[0].innerDiameter=val; //set input of Calc Line to new value
+                                                                                            copyArray[0].SelectedLUnit=newVal;
+                                                                                            this.setState({copyArray});
+                                                                                        }.bind(this));
+
+                                                                      }
+                                                              }}>
+                                              {lengthUnitSet}
+                                     </Picker>
                                  </View>
 
 
                                  <Button title="Confirm"
                                                 onPress={()=>{
-                                                    let copyArray=[...this.state.cLines];
-                                                    copyArray[i].modalVisible=false;
-                                                    copyArray[i].input=innerDiameter;
-                                                    copyArray[i].displayInput=''+innerDiameter;
-                                                    this.setState({copyArray});
+                                                    this.convertUnit(parseFloat(innerDiameter),SelectedLUnit,cLine.thisUnit,
+                                                                     function(val){
+                                                                        let copyArray=[...this.state.cLines];
+                                                                        copyArray[i].modalVisible=false;
+                                                                        copyArray[i].input=val;
+                                                                        copyArray[i].displayInput=''+val;
+                                                                        this.setState({copyArray});
+                                                                     }.bind(this));
+
+
+
 
                                                 }}
                                                 style={styles.button}/>
@@ -523,8 +558,14 @@ export default class CalculationClass extends Component {
            var outerDiameter = NPSOD[NPSindex];
            var wallThickness = NPSWallThickness[NPSindex][Schedindex];
 
+
            if(wallThickness!=null){
-                copyArray[0].innerDiameter=(outerDiameter-(2*wallThickness)).toFixed(6);
+                var id_mm=outerDiameter-(2*wallThickness);
+                this.convertUnit(id_mm,"mm",copyArray[0].SelectedLUnit,
+                                function(var){
+                                    copyArray[0].innerDiameter=val.toFixed(6);
+                                });
+                //copyArray[0].innerDiameter=(outerDiameter-(2*wallThickness)).toFixed(6);
            }
            else{
                 copyArray[0].innerDiameter='N/A';
@@ -549,6 +590,17 @@ export default class CalculationClass extends Component {
                 var thisUnit=cLine.thisUnit;
                 var inputHelperScheme=cLine.inputHelperScheme;
                 var modalVisible = cLine.modalVisible;
+
+                var placeHolderVal;
+
+                if (input==''){
+                    placeHolderVal="(value)"
+                }
+                else{
+                    placeHolderVal=displayInput;
+                }
+
+
                 //let inputHelpArr=[];
                 //inputHelpArr.push(this.helperModal(inputHelperScheme));
 
@@ -561,7 +613,7 @@ export default class CalculationClass extends Component {
                      <Text style={styles.textBox1}> {label} </Text>
                      <TextInput
                          style={{height:inputH,width: inputW, flex:inputFlex}}
-                         placeholder="(value)"
+                         placeholder={placeHolderVal}
                          onChangeText={(newValue) => {
                             //check new input is numeric and not null
                             if(newValue && !isNaN(parseFloat(newValue)) && isFinite(newValue)){
@@ -679,10 +731,10 @@ export default class CalculationClass extends Component {
       })
 
       return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
           { Arr }
           { rArr}
-        </View>
+        </ScrollView>
 
       );
     }
