@@ -126,7 +126,8 @@ export default class CalculationClass extends Component {
                 this.state.cLines[i].thisUnit=this.state.cLines[i].unitSet[0];
             }
             if(this.state.inputHelperSchemes[i]=="Pipe"){
-                this.state.cLines[i].inputHelper.push({SelectedNPSS:'',SelectedPS:'', NPSindex:0, Schedindex:0, innerDiameter:(10.26-2*0.889), lengthUnitSet:[], SelectedLUnit:'m'});
+                //Assume first setting is 1/8 NPS in with 5s sched and in meters
+                this.state.cLines[i].inputHelper.push({SelectedNPSS:'',SelectedPS:'', NPSindex:0, Schedindex:0, innerDiameter:(10.26-2*0.889)/1000, lengthUnitSet:[], SelectedLUnit:'m'});
                 await this.GetDerivedUnits("L",this.state.cLines[i].inputHelper[0].lengthUnitSet)
             }
             this.setState({
@@ -324,7 +325,13 @@ export default class CalculationClass extends Component {
                                                                                             this.setState({copyArray});
                                                                                         }.bind(this));
 
-                                                                      }
+                                                                     }
+                                                                     else
+                                                                     {
+                                                                        let copyArray=[...this.state.cLines[i].inputHelper];
+                                                                        copyArray[0].SelectedLUnit=newVal;
+                                                                        this.setState({copyArray});
+                                                                     }
                                                               }}>
                                               {lengthUnitSet}
                                      </Picker>
@@ -361,7 +368,7 @@ export default class CalculationClass extends Component {
         }
   }
 
-    updateID = (whichVal,theVal,theIndex,i)=>{
+    updateID = async(whichVal,theVal,theIndex,i)=>{
 
            var NPSOD=[
                                                     10.26, 13.72, 17.15, 21.34, 26.67, 33.40, 42.16, 48.26, 60.33, 73.03, 88.90, 101.60,
@@ -558,19 +565,20 @@ export default class CalculationClass extends Component {
            var outerDiameter = NPSOD[NPSindex];
            var wallThickness = NPSWallThickness[NPSindex][Schedindex];
 
-
            if(wallThickness!=null){
                 var id_mm=outerDiameter-(2*wallThickness);
-                this.convertUnit(id_mm,"mm",copyArray[0].SelectedLUnit,
-                                function(var){
+                await this.convertUnit(id_mm,"mm",copyArray[0].SelectedLUnit,
+                                function(val){
                                     copyArray[0].innerDiameter=val.toFixed(6);
-                                });
+                                    this.setState({copyArray});
+                                }.bind(this));
                 //copyArray[0].innerDiameter=(outerDiameter-(2*wallThickness)).toFixed(6);
            }
            else{
                 copyArray[0].innerDiameter='N/A';
+                this.setState({copyArray});
            }
-           this.setState({copyArray});
+           //this.setState({copyArray});
 
         }
 
