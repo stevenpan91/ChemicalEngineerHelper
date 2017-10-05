@@ -34,6 +34,8 @@ public class CPPConnection extends ReactContextBaseJavaModule {
 
     public native double convertFromSI(double value, String unit);
 
+    public native double FrictionFactor(double density, double massFlow, double pipeId, double viscosity, double roughness);
+
     @ReactMethod
     public void CPPConvertToSI(double value, String unit, final Promise promise){
         double retVal = convertToSI(value,unit);
@@ -44,6 +46,12 @@ public class CPPConnection extends ReactContextBaseJavaModule {
     @ReactMethod
     public void CPPConvertFromSI(double value, String unit, final Promise promise){
         double retVal = convertFromSI(value,unit);
+        promise.resolve(retVal);
+    }
+
+    @ReactMethod
+    public void CPPFrictionFactor(double density, double massFlow, double pipeId, double viscosity, double roughness, final Promise promise){
+        double retVal = FrictionFactor(density,massFlow,pipeId,viscosity,roughness);
         promise.resolve(retVal);
     }
 
