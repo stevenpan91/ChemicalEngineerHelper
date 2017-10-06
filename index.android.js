@@ -24,6 +24,7 @@ import Density from './app/equations/Density'
 import VaporDensity from './app/equations/VaporDensity'
 import ReynoldsNumber from './app/equations/ReynoldsNumber'
 import PipePressureDrop from './app/equations/PipePressureDrop'
+import PipePressureDropCompressible from './app/equations/PipePressureDropCompressible'
 import CalculationClass from './app/classes/CalculationClass'
 import CPPConnection from './app/classes/CPPConnection'
 import CEHFunctions from './app/modules/CEHFunctions'
@@ -78,6 +79,7 @@ const ChemEngHelper = StackNavigator({
   "Vapor Density": { screen: VaporDensity },
   "Reynolds Number": { screen: ReynoldsNumber },
   "Pipe Pressure Drop":{ screen: PipePressureDrop },
+  "Pipe Pressure Drop Compressible":{screen:PipePressureDropCompressible},
   "Calculation Class": {screen: CalculationClass}
 });
 

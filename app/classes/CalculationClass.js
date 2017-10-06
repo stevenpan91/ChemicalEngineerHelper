@@ -50,7 +50,7 @@ export default class CalculationClass extends Component {
 
    updateDisplayResult(newval){
 
-        if(newval && !isNaN(newval) && isFinite(newval)){
+        if(cf.CheckNumeric(newval)){
              this.state.rLine.map((rLine,i) => {
                  this.convertFromSI(newval,rLine.thisUnit,
                     function(val){
@@ -316,6 +316,9 @@ export default class CalculationClass extends Component {
                                               mode="dropdown"
                                               selectedValue={SelectedLUnit}
                                               onValueChange={(newVal, newValIndex) => {
+                                                                    let copyArray=[...this.state.cLines[i].inputHelper];
+                                                                    copyArray[0].SelectedLUnit=newVal;
+                                                                    this.setState({copyArray});
                                                                     if(cf.CheckNumeric(innerDiameter)){
                                                                           this.convertUnit(parseFloat(innerDiameter),SelectedLUnit,newVal,
                                                                                         function (val){
@@ -325,13 +328,8 @@ export default class CalculationClass extends Component {
                                                                                             this.setState({copyArray});
                                                                                         }.bind(this));
 
-                                                                     }
-                                                                     else
-                                                                     {
-                                                                        let copyArray=[...this.state.cLines[i].inputHelper];
-                                                                        copyArray[0].SelectedLUnit=newVal;
-                                                                        this.setState({copyArray});
-                                                                     }
+                                                                    }
+
                                                               }}>
                                               {lengthUnitSet}
                                      </Picker>
@@ -624,7 +622,7 @@ export default class CalculationClass extends Component {
                          placeholder={placeHolderVal}
                          onChangeText={(newValue) => {
                             //check new input is numeric and not null
-                            if(newValue && !isNaN(parseFloat(newValue)) && isFinite(newValue)){
+                            if(cf.CheckNumeric(newValue)){
                                 this.convertToSI(parseFloat(newValue),thisUnit,
                                               function (val){
                                                   let copyArray=[...this.state.cLines];
@@ -662,7 +660,7 @@ export default class CalculationClass extends Component {
                         selectedValue={thisUnit}
                         onValueChange={(newUnit, newUnitIndex) => {
                                                     //if this input value is a number then recalculate
-                                                    if(input && !isNaN(parseFloat(input)) && isFinite(input)){
+                                                    if(cf.CheckNumeric(input)){
                                                         this.convertUnit(parseFloat(input),thisUnit,newUnit,
                                                           function (val){
                                                               let copyArray=[...this.state.cLines];
@@ -712,7 +710,7 @@ export default class CalculationClass extends Component {
                               selectedValue={resultUnit}
                               onValueChange={(newUnit, newUnitIndex) => {
                                                      //if result value is a number convert it and set new unit
-                                                     if(resultVal && !isNaN(parseFloat(resultVal)) && isFinite(resultVal)){
+                                                     if(cf.CheckNumeric(resultVal)){
                                                          this.convertUnit(parseFloat(resultVal),resultUnit,newUnit,
                                                            function (val){
                                                            let copyArray=[...this.state.rLine];

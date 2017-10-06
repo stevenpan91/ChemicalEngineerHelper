@@ -36,6 +36,9 @@ public class CPPConnection extends ReactContextBaseJavaModule {
 
     public native double FrictionFactor(double density, double massFlow, double pipeId, double viscosity, double roughness);
 
+    public native double PipePressureDropCompressible(double initPressure,double initTemp, double MW, double Z, double mu,
+                                        double massFlow, double pipeId, double pipeLen, double roughness);
+
     @ReactMethod
     public void CPPConvertToSI(double value, String unit, final Promise promise){
         double retVal = convertToSI(value,unit);
@@ -55,6 +58,14 @@ public class CPPConnection extends ReactContextBaseJavaModule {
         promise.resolve(retVal);
     }
 
+
+    @ReactMethod
+    public void CPPPipePressureDropCompressible(double initPressure,double initTemp, double MW, double Z, double mu,
+                                                double massFlow, double pipeId, double pipeLen, double roughness, final Promise promise){
+        double retVal = PipePressureDropCompressible(initPressure,initTemp,MW,Z,mu,massFlow,pipeId,pipeLen,roughness);
+        promise.resolve(retVal);
+
+    }
 
     public class DerivedUnitHelper{
         String[] unitSet;
