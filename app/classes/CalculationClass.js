@@ -560,6 +560,9 @@ export default class CalculationClass extends Component {
            }
            var NPSindex=copyArray[0].NPSindex;
            var Schedindex=copyArray[0].Schedindex;
+
+           this.setState({copyArray});
+
            var outerDiameter = NPSOD[NPSindex];
            var wallThickness = NPSWallThickness[NPSindex][Schedindex];
 
@@ -660,10 +663,13 @@ export default class CalculationClass extends Component {
                         selectedValue={thisUnit}
                         onValueChange={(newUnit, newUnitIndex) => {
                                                     //if this input value is a number then recalculate
+                                                    let copyArray=[...this.state.cLines];
+                                                    copyArray[i].thisUnit=newUnit;
+                                                    this.setState({copyArray});
                                                     if(cf.CheckNumeric(input)){
                                                         this.convertUnit(parseFloat(input),thisUnit,newUnit,
                                                           function (val){
-                                                              let copyArray=[...this.state.cLines];
+                                                              //let copyArray=[...this.state.cLines];
                                                               copyArray[i].input=val;
                                                               copyArray[i].displayInput=''+val.toFixed(4);
                                                               copyArray[i].thisUnit=newUnit;
@@ -673,11 +679,11 @@ export default class CalculationClass extends Component {
                                                           }.bind(this));
                                                     }
                                                     //otherwise just set the unit
-                                                    else{
-                                                        let copyArray=[...this.state.cLines];
-                                                        copyArray[i].thisUnit=newUnit;
-                                                        this.setState({copyArray});
-                                                    }
+//                                                    else{
+//                                                        let copyArray=[...this.state.cLines];
+//                                                        copyArray[i].thisUnit=newUnit;
+//                                                        this.setState({copyArray});
+//                                                    }
                                                 }
                                               }>
                         {unitSet}
