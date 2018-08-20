@@ -3,3 +3,16 @@ local.properties
 node_modules/
 ios/build/
 android/
+gradlew
+gradle/
+gradle.properties
+gradlew.bat
+build/
+build.gradle
+*.apk
+settings.gradle
+*.pro
+__tests__/
+.*config
+*.iml
+.idea

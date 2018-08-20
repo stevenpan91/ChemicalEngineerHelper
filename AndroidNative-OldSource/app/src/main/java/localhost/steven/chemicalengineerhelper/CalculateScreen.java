@@ -1,6 +1,5 @@
 package localhost.steven.chemicalengineerhelper;
 
-//import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -23,7 +22,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.sql.Types.NULL;
 
 
 
@@ -1122,43 +1119,6 @@ public class CalculateScreen extends AppCompatActivity {
 
             final int x = index;
 
-//            CL.popupOut = new PopupOutput() {
-//                public String getPopupOutput()
-//
-//                {
-//                    int NPSindex = NPSNoEmpty.indexOf(NPSDD.getSelectedItem().toString());
-//                    int Schedindex = SchedNoEmpty.indexOf(ScheduleDD.getSelectedItem().toString());
-//
-//                    Double outerDiameter = NPSOD[NPSindex];
-//                    Double wallThickness = NPSWallThickness[NPSindex][Schedindex];
-//
-//                    double innerDiameter;
-//
-//                    if (outerDiameter != null && wallThickness != null) {
-//                        innerDiameter = outerDiameter - (2 * wallThickness);
-//                        innerDiameter = convertToSI(innerDiameter, "mm");
-//                        innerDiameter = convertFromSI(innerDiameter, calcLine.dropDown
-//                                .getSelectedItem().toString());
-//
-//
-//                        return Double.toString(
-//
-//                                innerDiameter
-//                        );
-//                    } else
-//                        return "";
-//
-//                }
-//
-//                CalcLine calcLine;
-//
-//                private PopupOutput init(CalcLine var) {
-//                    calcLine = var;
-//                    return this;
-//                }
-//
-//
-//            }.init(CL);
 
             NPSDD.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
                 @Override
@@ -1197,9 +1157,6 @@ public class CalculateScreen extends AppCompatActivity {
                     calcLine = var;
                     return this;
                 }
-
-
-//            }.init(CL);
 
             }.init(CL));
 
@@ -1382,63 +1339,34 @@ public class CalculateScreen extends AppCompatActivity {
 
         switch(whichButton.substring(4)){
             case "0":
+                CalcLines = new CalcLine[2];
+                SetCalculationScheme(CalcLines,calcLayout,0,false);
+                MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,0,null,"Density");
+                break;
 
-                    CalcLines = new CalcLine[2];
-                    SetCalculationScheme(CalcLines,calcLayout,0,false);
-
-                    MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,0,null,"Density");
-
-
-
-                    break;
             case "1":
-
-                    CalcLines=new CalcLine[4];
-                    SetCalculationScheme(CalcLines,calcLayout,1,false);
-
-                    MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,1,null,"Vapor Density");
-
-                    break;
+                CalcLines=new CalcLine[4];
+                SetCalculationScheme(CalcLines,calcLayout,1,false);
+                MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,1,null,"Vapor Density");
+                break;
 
             case "2":
-
-                    CalcLines = new CalcLine[4];
-
-                    SetCalculationScheme(CalcLines,calcLayout,2,false);
-
-                     MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,2,null, "Reynolds Number");
-
-                    break;
+                CalcLines = new CalcLine[4];
+                SetCalculationScheme(CalcLines,calcLayout,2,false);
+                MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,2,null, "Reynolds Number");
+                break;
 
             case "3":
-                //generateResultSection("PressureAbsolute");
                 CalcLines = new CalcLine[6];
-
                 SetCalculationScheme(CalcLines,calcLayout,3,false);
-
                 MainCalcPage = new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,3,null, "Differential Pressure");
-
-                //MainCalcPage.resultText.setText("Pressure Difference");
-
-                //friction factor aid
-
-                //CalcLines[4].PopupCalcLines = new CalcLine[4];
-
-                //SetCalculationScheme(CalcLines[4].PopupCalcLines,CalcLines[4].popupLayout,4,true);
-
-                //CalcLines[4].PopupPage = new CalcPage(
-                 //       "None",CalcLines[4].popupLayout,CalcLines[4].PopupCalcLines,this,4,CalcLines[4]);
-
-               // CalcLines[4].PopupPage.calcReady=true;
-
-                    break;
+                break;
 
             case "4":
                 CalcLines=new CalcLine[9];
                 SetCalculationScheme(CalcLines,calcLayout,5,false);
                 MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null, "Final Pressure");
-
-                //MainCalcPage.resultText.setText("Final Pressure");
+                break;
 
         }
 
@@ -1479,13 +1407,10 @@ public class CalculateScreen extends AppCompatActivity {
         switch(schemeIndex){
             //density general
             case 0:
-
                 //generateResultSection("Density",theLayout);
-
                 //CLines= new CalcLine[2];
                 CLines[0]=new CalcLine(0,0,"Enter Mass","Mass", this,theLayout,inPopup);
                 CLines[1]=new CalcLine(1,0, "Enter Volume", "Volume", this,theLayout,inPopup);
-
                 break;
             
             //density vapor
@@ -1511,18 +1436,12 @@ public class CalculateScreen extends AppCompatActivity {
                 CLines[1]=new CalcLine(1,0,"Enter Mass Flow Rate","MassFlowRate",this,theLayout,inPopup);
                 CLines[2]=new CalcLine(2,2, "Enter Pipe Internal Diameter", "Length",this,theLayout,inPopup);
                 CLines[3]=new CalcLine(3,0, "Enter Viscosity (Dynamic)", "Viscosity",this,theLayout,inPopup);
-
                 pipeHelp=new PipeHelp(CLines[2],0,this);
-                //initPipeHelp(CLines[2],0);
-
-
 
                 break;
             
             //Pressure Drop
             case 3:
-                //generateResultSection("PressureAbsolute",theLayout,inPopup);
-                //CLines = new CalcLine[5];
 
                 CLines[0]=new CalcLine(0,0,"Enter Fluid Density","Density",this,theLayout,inPopup);
                 CLines[1]=new CalcLine(1,0,"Enter Mass Flow Rate","MassFlowRate",this,theLayout,inPopup);
@@ -1532,18 +1451,11 @@ public class CalculateScreen extends AppCompatActivity {
                 CLines[4]=new CalcLine(4,0, "Enter Viscosity", "Viscosity",this,theLayout,inPopup);
                 CLines[5]=new CalcLine(5,0, "Enter Roughness", "Length",this,theLayout,inPopup);
                 CLines[5].textLine.setText("4.57e-5");
-                //initPipeHelp(CLines[2],0);
                 pipeHelp=new PipeHelp(CLines[2],0,this);
                 break;
             
             //friction factor
             case 4:
-                //friction factor aid
-
-                //generateResultSection("None",theLayout,inPopup);
-
-                //CLines = new CalcLine[4];
-
                 CLines[0]=
                         new CalcLine(0,0,"Enter Density","Density",this,theLayout,inPopup);
                 CLines[1]=
@@ -1555,9 +1467,8 @@ public class CalculateScreen extends AppCompatActivity {
                 CLines[4]=
                         new CalcLine(4,0, "Enter Roughness", "Length",this, theLayout, inPopup);
                 CLines[4].textLine.setText("4.57e-5");
-
                 pipeHelp=new PipeHelp(CLines[2],0,this);
-                //initPipeHelp(CLines[2],0);
+
 
                 break;
 
