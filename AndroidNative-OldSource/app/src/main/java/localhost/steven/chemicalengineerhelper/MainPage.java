@@ -24,8 +24,10 @@ public class MainPage extends AppCompatActivity {
         System.loadLibrary("native-lib");
 
     }
-    public String[] buttonText={"Density","Vapor Density","Reynolds Number (Diameter)",
-            "Pipe Pressure Drop Incompressible (Darcy-Weisbach)","Pipe Pressure Drop Compressible (Darcy-Weisbach)"};
+    public String[] buttonText={"Unit Converter", "Internal Diameter Calculator (NPS)",
+            "Density","Vapor Density","Reynolds Number (Diameter)",//0 to 2
+            "Pipe Pressure Drop Incompressible (Darcy-Weisbach)","Pipe Pressure Drop Compressible (Darcy-Weisbach)",
+            };
     //public final static String EXTRA_MESSAGE="PocketEngineer.Message";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
