@@ -39,103 +39,31 @@ import java.util.List;
 
 public class CalculateScreen extends AppCompatActivity {
 
+    public String[] RemoveEmpty(String[] sourceArray){
+        String[] sourceCopy = Arrays.copyOf(sourceArray, sourceArray.length);
+
+        ArrayList<String> sourceCopyNoEmpty = new ArrayList<String>();
+        for (int i = 0; i < sourceCopy.length; i++) {
+            if (sourceCopy[i] != "") {
+
+                sourceCopyNoEmpty.add(sourceCopy[i]);
+            }
+        }
+        return sourceCopyNoEmpty.toArray(new String[0]);
+    }
+
     
     public String[]UnitTypes={"None","Temperature","PressureAbsolute","Mass","Length","Time","Volume","Density",
             "MassFlowRate","Viscosity"};
 
     public class DropDownLine extends CalcLine{
-        private void setDropDowns(String unitType,Spinner dropDown, Context ctx){
-            String [] propSet={"-"};
-
-            int unitIndex=-1;
-
-            switch (unitType){
-                case "None":
-                    //unitIndex=0;
-                    break;
-                case "Temperature":
-                    unitIndex=1;
-                    break;
-
-                case "PressureAbsolute":
-                    unitIndex=2;
-                    break;
-
-                case "Mass":
-                    unitIndex=3;
-                    break;
-
-                case "Length":
-                    unitIndex=4;
-                    break;
-
-                case "Time":
-                    unitIndex=5;
-                    break;
-
-                case "Volume":
-                    propSet=GetDerivedUnits("L3");
-                    break;
-
-                case "Density":
-                    propSet=GetDerivedUnits("M/L3");
-                    break;
-
-                case "MassFlowRate":
-                    propSet=GetDerivedUnits("M/Z");
-                    break;
-
-                case "Viscosity":
-                    propSet=GetDerivedUnits("P*Z");
-                    break;
-
-                default:
-                    //unitIndex=0;
-                    break;
-
-            }
-
-            if (unitIndex!=-1)
-                propSet= Arrays.copyOf(allUnits[unitIndex],allUnits[unitIndex].length);
-
-
-
-            List<String> propNoEmpty=new ArrayList<String>();
-            for(int i=0;i<propSet.length;i++)
-            {
-                if (propSet[i]!=""){
-
-                    propNoEmpty.add(propSet[i]);
-                }
-            }
-            propNoEmpty.toArray();
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(ctx,
-                    R.layout.my_spinner_text_view,propNoEmpty);
-            dropDown.setAdapter(adapter);
-        }
-
-
-
-        //public CalcLine(int pos, int ppfieldAmounts, String hint, String valueType, Context ctx, RelativeLayout theLayout){
-        public DropDownLine(int pos, int ppfieldAmounts, String[] sourceArray, String valueType,
-                        Context ctx, RelativeLayout theLayout, boolean inPopup){
+        public DropDownLine(int pos, String[] sourceArray, Context ctx, RelativeLayout theLayout, boolean inPopup){
 
             hasPopupPage=false;
 
-            if(ppfieldAmounts>0)
-                hasPopupPage=true;
-
             textLine = new Spinner(ctx);
             Spinner spinnerTextLine=(Spinner)textLine;
-            lineParam=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 150);
-
-            if(inPopup)
-                dropDown=new Spinner(ctx, Spinner.MODE_DIALOG);
-            else
-                dropDown=new Spinner(ctx);
-
-            dDParam=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 150);
+            lineParam=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 150);
 
             position=pos;
 
@@ -145,119 +73,14 @@ public class CalculateScreen extends AppCompatActivity {
 
             lineParam.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             lineParam.setMargins(0, offset, 0, 0);
-            //textLine.setTextSize(12);
             textLine.setLayoutParams(lineParam);
-            //textLine.setHint(hint);
 
-            dDParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-
-            dDParam.setMargins(0,offset,120,0);
-
-            String[] sourceCopy = Arrays.copyOf(sourceArray, sourceArray.length);
-
-            ArrayList<String> sourceCopyNoEmpty = new ArrayList<String>();
-            for (int i = 0; i < sourceCopy.length; i++) {
-                if (sourceCopy[i] != "") {
-
-                    sourceCopyNoEmpty.add(sourceCopy[i]);
-                }
-            }
-            sourceCopyNoEmpty.toArray();
-
-            ArrayAdapter<String> NPSadapter = new ArrayAdapter<String>(ctx,
-                    R.layout.my_spinner_text_view, sourceCopyNoEmpty);
+            ArrayAdapter<String> NPSadapter = new ArrayAdapter<>(ctx,
+                    R.layout.my_spinner_text_view, RemoveEmpty(sourceArray));
             spinnerTextLine.setAdapter(NPSadapter);
 
-            dropDown.setLayoutParams(dDParam);
-            setDropDowns(valueType,dropDown,ctx);
 
             theLayout.addView(textLine);
-            theLayout.addView(dropDown);
-
-
-
-
-            if(ppfieldAmounts>0) {
-
-                popupWindow = new PopupWindow();
-                inputHelpButton = new Button(ctx);
-                iHelpBParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 150);
-
-                popupLayoutWrap = new LinearLayout(ctx);
-                popupLayout = new RelativeLayout(ctx);
-
-                popupLayoutWrap.addView(popupLayout);
-
-                isClicked = true;
-
-
-                popupLayout.setBackgroundColor(Color.WHITE);
-
-
-                inputHelpButton = new Button(ctx);
-                inputHelpButton.setText("...");
-
-
-                iHelpBParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                iHelpBParam.setMargins(0, position * 100, 0, 0);
-
-                inputHelpButton.setTextSize(12);
-                inputHelpButton.setBackgroundResource(outValue.resourceId);
-                inputHelpButton.setLayoutParams(iHelpBParam);
-
-                popupWindow = new PopupWindow();
-                popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-                popupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-
-                popupWindow.setOutsideTouchable(true);
-
-                popupWindow.setFocusable(true);
-
-                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-                int thisPosition = position;
-
-
-                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-                    @Override
-                    public void onDismiss() {
-                        isClicked=true;
-                        popupWindow.dismiss();
-
-
-                    }
-                });
-
-
-                inputHelpButton.setOnClickListener(new View.OnClickListener() {
-                                                       //boolean isClicked=true;
-
-                                                       public void onClick(View v) {
-
-
-                                                           if (isClicked) {
-                                                               isClicked = false;
-                                                               popupWindow.showAtLocation(popupLayoutWrap, Gravity.CENTER, 10, 10);
-                                                               //popupWindow.update(0, 0, popupWindow.getWidth(), popupWindow.getHeight());
-                                                           } else {
-                                                               isClicked = true;
-                                                               popupWindow.dismiss();
-                                                           }
-                                                       }
-
-
-                                                   }
-                );
-
-
-
-                popupWindow.setContentView(popupLayoutWrap);
-
-                theLayout.addView(inputHelpButton);
-            }
-
-
         }
 
     }
@@ -322,20 +145,8 @@ public class CalculateScreen extends AppCompatActivity {
             if (unitIndex!=-1)
                 propSet= Arrays.copyOf(allUnits[unitIndex],allUnits[unitIndex].length);
 
-
-
-            List<String> propNoEmpty=new ArrayList<String>();
-            for(int i=0;i<propSet.length;i++)
-            {
-                if (propSet[i]!=""){
-
-                    propNoEmpty.add(propSet[i]);
-                }
-            }
-            propNoEmpty.toArray();
-
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(ctx,
-                    R.layout.my_spinner_text_view,propNoEmpty);
+                    R.layout.my_spinner_text_view,RemoveEmpty(propSet));
             dropDown.setAdapter(adapter);
         }
 
@@ -629,7 +440,7 @@ public class CalculateScreen extends AppCompatActivity {
 
             resultDropDown.setLayoutParams(rDDParams);
 
-            setDropDowns(property,resultDropDown);
+            setDropDowns(property,resultDropDown,ctx);
         }
 
         
@@ -732,8 +543,9 @@ public class CalculateScreen extends AppCompatActivity {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
                                            int position, long id){
-                    ((TextView)parentView.getChildAt(0)).setTextSize(12);
-                    calcResult(returnThis(),pageCalcType,resultMessage);
+                    if(parentView.getChildAt(0)!=null)
+                        ((TextView)parentView.getChildAt(0)).setTextSize(12);
+                        calcResult(returnThis(),pageCalcType,resultMessage);
                 }
 
                 @Override
@@ -799,52 +611,50 @@ public class CalculateScreen extends AppCompatActivity {
                 }
 
 
+                if(CalcLines[i].dropDown!=null) {
+                    CalcLines[i].dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-                CalcLines[i].dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+                        String previous = CalcLines[x].dropDown.getSelectedItem().toString();
 
-                    String previous=CalcLines[x].dropDown.getSelectedItem().toString();
-                    @Override
-                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
-                                               int position, long id){
-                        ((TextView)parentView.getChildAt(0)).setTextSize(12);
-
-
-
-
+                        @Override
+                        public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
+                                                   int position, long id) {
+                            if(parentView.getChildAt(0)!=null)
+                                ((TextView) parentView.getChildAt(0)).setTextSize(12);
 
 
-                        if(CalcLines[x].textLine instanceof EditText) {
-                            EditText editTextLine = (EditText)CalcLines[x].textLine;
+                            if (CalcLines[x].textLine instanceof EditText) {
+                                EditText editTextLine = (EditText) CalcLines[x].textLine;
 
-                            if (previous != null && !editTextLine.getText().toString().matches("")) {
+                                if (previous != null && !editTextLine.getText().toString().matches("")) {
 
-                                try {
-                                    double theValue = eTxtToDbl(editTextLine);
-                                    theValue = convertFromSI(convertToSI(theValue, previous)
-                                            , CalcLines[x].dropDown.getSelectedItem().toString()
-                                    );
-                                    editTextLine.setText(Double.toString(theValue));
+                                    try {
+                                        double theValue = eTxtToDbl(editTextLine);
+                                        theValue = convertFromSI(convertToSI(theValue, previous)
+                                                , CalcLines[x].dropDown.getSelectedItem().toString()
+                                        );
+                                        editTextLine.setText(Double.toString(theValue));
 
-                                } catch (final NumberFormatException e) {
-                                    //no one cares
+                                    } catch (final NumberFormatException e) {
+                                        //no one cares
+                                    }
+
                                 }
-
                             }
+
+                            previous = CalcLines[x].dropDown.getSelectedItem().toString();
+
+
+                            calcResult(returnThis(), pageCalcType, resultMessage);
                         }
 
-                        previous=CalcLines[x].dropDown.getSelectedItem().toString();
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parentView) {
 
+                        }
 
-
-                        calcResult(returnThis(),pageCalcType,resultMessage);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parentView){
-
-                    }
-
-                });
+                    });
+                }
             }
 
 
@@ -1359,8 +1169,7 @@ public class CalculateScreen extends AppCompatActivity {
 
             final int x = index;
 
-
-            NPSDD.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            AdapterView.OnItemSelectedListener getSizeListener=new AdapterView.OnItemSelectedListener(){
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
                                            int position, long id){
@@ -1398,53 +1207,11 @@ public class CalculateScreen extends AppCompatActivity {
                     return this;
                 }
 
-            }.init(CL));
-
-            ScheduleDD.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-                @Override
-                public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
-                                           int position, long id){
-                    ((TextView)parentView.getChildAt(0)).setTextSize(12);
-                    int NPSindex = NPSNoEmpty.indexOf(NPSDD.getSelectedItem().toString());
-                    int Schedindex = SchedNoEmpty.indexOf(ScheduleDD.getSelectedItem().toString());
-
-                    Double outerDiameter = NPSOD[NPSindex];
-                    Double wallThickness = NPSWallThickness[NPSindex][Schedindex];
-
-                    double innerDiameter;
-
-                    if (outerDiameter != null && wallThickness != null) {
-                        innerDiameter = outerDiameter - (2 * wallThickness);
-                        innerDiameter = convertToSI(innerDiameter, "mm");
-                        innerDiameter = convertFromSI(innerDiameter, calcLine.PopupPage.resultDropDown
-                                .getSelectedItem().toString());
+            }.init(CL);
 
 
-                        calcLine.PopupPage.resultText.setText(String.valueOf(innerDiameter));
-
-                    } else
-                        calcLine.PopupPage.resultText.setText("");
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parentView){
-
-                }
-
-                CalcLine calcLine;
-
-                private AdapterView.OnItemSelectedListener init(CalcLine var) {
-                    calcLine = var;
-                    return this;
-                }
-
-
-//            }.init(CL);
-
-            }.init(CL));
-
-
-
+            NPSDD.setOnItemSelectedListener(getSizeListener);
+            ScheduleDD.setOnItemSelectedListener(getSizeListener);
 
             CL.popupLayout.addView(NPSLabel);
             CL.popupLayout.addView(SchedLabel);
@@ -1457,7 +1224,7 @@ public class CalculateScreen extends AppCompatActivity {
 
     //boolean calcReady;
 
-    private void setDropDowns(String unitType,Spinner dropDown){
+    private void setDropDowns(String unitType,Spinner dropDown,Context ctx){
         String [] propSet={"-"};
 
         int unitIndex=-1;
@@ -1512,19 +1279,8 @@ public class CalculateScreen extends AppCompatActivity {
             propSet=Arrays.copyOf(allUnits[unitIndex],allUnits[unitIndex].length);
 
 
-
-        List<String> propNoEmpty=new ArrayList<String>();
-        for(int i=0;i<propSet.length;i++)
-        {
-            if (propSet[i]!=""){
-
-                propNoEmpty.add(propSet[i]);
-            }
-        }
-        propNoEmpty.toArray();
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                R.layout.my_spinner_text_view,propNoEmpty);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(ctx,
+                R.layout.my_spinner_text_view,RemoveEmpty(propSet));
         dropDown.setAdapter(adapter);
     }
     @Override
@@ -1581,45 +1337,74 @@ public class CalculateScreen extends AppCompatActivity {
             //Unit Conversion
             case "0":
                 CalcLines = new CalcLine[2];
-                SetCalculationScheme(CalcLines,calcLayout,6,false);
-                MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,0,null,"Result");
+                SetCalculationScheme(CalcLines,calcLayout,6,false,this);
+                MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,0,null,"To Value");
+
+                ((Spinner)CalcLines[0].textLine).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+                    Context thisCtx;
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
+                                               int position, long id){
+                        ((TextView)parentView.getChildAt(0)).setTextSize(12);
+                        ((TextView)parentView.getChildAt(0)).setGravity(Gravity.CENTER);
+
+                        setDropDowns(((Spinner)CalcLines[0].textLine).getSelectedItem().toString(),CalcLines[1].dropDown,thisCtx);
+                        if(MainCalcPage.resultDropDown!=null)
+                            setDropDowns(((Spinner)CalcLines[0].textLine).getSelectedItem().toString(),MainCalcPage.resultDropDown,thisCtx);
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView){
+
+                    }
+
+                    private AdapterView.OnItemSelectedListener init(Context var){
+                        thisCtx = var;
+                        return this;
+                    }
+
+                }.init(this));
+
                 break;
 
             //NPS Sizes
             case "1":
                 CalcLines = new CalcLine[2];
-                SetCalculationScheme(CalcLines,calcLayout,7,false);
-                MainCalcPage = new CalcPage("Length",calcLayout,CalcLines,this,0,null,"Inner Diameter");
+                SetCalculationScheme(CalcLines,calcLayout,7,false,this);
+                MainCalcPage = new CalcPage("Length",calcLayout,CalcLines,this,1,null,"Inner Diameter");
                 break;
             //Density
             case "2":
                 CalcLines = new CalcLine[2];
-                SetCalculationScheme(CalcLines,calcLayout,0,false);
-                MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,0,null,"Density");
+                SetCalculationScheme(CalcLines,calcLayout,0,false,this);
+                MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,2,null,"Density");
                 break;
 
             case "3":
                 CalcLines=new CalcLine[4];
-                SetCalculationScheme(CalcLines,calcLayout,1,false);
-                MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,1,null,"Vapor Density");
+                SetCalculationScheme(CalcLines,calcLayout,1,false,this);
+                MainCalcPage = new CalcPage("Density",calcLayout,CalcLines,this,3,null,"Vapor Density");
                 break;
 
             case "4":
                 CalcLines = new CalcLine[4];
-                SetCalculationScheme(CalcLines,calcLayout,2,false);
-                MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,2,null, "Reynolds Number");
+                SetCalculationScheme(CalcLines,calcLayout,2,false,this);
+                MainCalcPage = new CalcPage("None",calcLayout,CalcLines,this,4,null, "Reynolds Number");
                 break;
 
             case "5":
                 CalcLines = new CalcLine[6];
-                SetCalculationScheme(CalcLines,calcLayout,3,false);
-                MainCalcPage = new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,3,null, "Differential Pressure");
+                SetCalculationScheme(CalcLines,calcLayout,3,false,this);
+                MainCalcPage = new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null, "Differential Pressure");
                 break;
 
             case "6":
                 CalcLines=new CalcLine[9];
-                SetCalculationScheme(CalcLines,calcLayout,5,false);
-                MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,5,null, "Final Pressure");
+                SetCalculationScheme(CalcLines,calcLayout,5,false,this);
+                MainCalcPage=new CalcPage("PressureAbsolute",calcLayout,CalcLines,this,7,null, "Final Pressure");
                 break;
 
         }
@@ -1655,7 +1440,7 @@ public class CalculateScreen extends AppCompatActivity {
 
     
     public void SetCalculationScheme(CalcLine[] CLines,RelativeLayout theLayout, int schemeIndex, 
-                                     boolean inPopup){
+                                     boolean inPopup, Context ctx){
 
         PipeHelp pipeHelp;
 
@@ -1748,9 +1533,12 @@ public class CalculateScreen extends AppCompatActivity {
                 break;
             //unit conversion
             case 6:
-                CLines[0]=new DropDownLine(0,0,UnitTypes,"PressureAbsolute",this,theLayout,inPopup);
-                CLines[1]=new CalcLine(1,0,"From Value","Temperature",this,theLayout,inPopup);
-                CLines[2]=new CalcLine(1,0,"To Value","Temperature",this,theLayout,inPopup);
+                CLines[0]=new DropDownLine(0,UnitTypes,this,theLayout,inPopup);
+
+                CLines[1]=new CalcLine(1,0,"From Value","None",this,theLayout,inPopup);
+                //CLines[2]=new CalcLine(2,0,"To Value","None",this,theLayout,inPopup);
+
+
                 break;
 
             //NPS pipes
@@ -1789,23 +1577,19 @@ public class CalculateScreen extends AppCompatActivity {
 //Calculation result page
     public void calcResult(CalcPage CPage, int calcType, String resultMessage) {
 
-        //Intent intent=new Intent(this,DisplayMessageActivity.class);
-    //if (resultDropDown!=null)
-    //    calcReady=true;
-
 
         if (CPage.calcReady) {
 
             String result = resultMessage;
             Double resultDbl = null;
 
-            //double[] lineVals = new double[lines.length];
-            //String[] lineUnits = new String[lines.length];
 
             double[] lineVals = new double[CPage.CalcLines.length];
             String[] lineUnits = new String[CPage.CalcLines.length];
 
             boolean emptyVals = false;
+            //get all line values
+            //note that this converts all line values to SI units
             for (int i = 0; i < CPage.CalcLines.length; i++) {
 
 
@@ -1832,32 +1616,37 @@ public class CalculateScreen extends AppCompatActivity {
             if (!emptyVals) {
                 switch (calcType) {
                 case 0:
+                    resultDbl = lineVals[1]; //will be converted from SI below
+                    break;
+                case 1:
+                    break;
+                case 2:
 
                     resultDbl = (lineVals[0] / lineVals[1]);
                     break;
 
-                case 1:
+                case 3:
 
 
                     resultDbl = (lineVals[0] * lineVals[2] /
                             lineVals[1] / lineVals[3] / 8.314 / 1000
                     );
                     break;
-                case 2:
+                case 4:
 
                     resultDbl=ReynoldsNumber(lineVals[0],lineVals[1],lineVals[2],lineVals[3]);
                     break;
 
-                case 3:
+                case 5:
                     double fricFrac=FrictionFactor(lineVals[0],lineVals[1],lineVals[2],lineVals[4],lineVals[5]);
                     resultDbl=PipePressureDropIncompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],fricFrac);
                     break;
 
-                case 4:
+                case 6:
                     resultDbl=FrictionFactor(lineVals[0],lineVals[1],lineVals[2],lineVals[3],lineVals[4]);
                     break;
 
-                case 5:
+                case 7:
                     resultDbl=PipePressureDropCompressible(lineVals[0],lineVals[1],lineVals[2],lineVals[3],
                             lineVals[4],lineVals[5],lineVals[6],lineVals[7],lineVals[8]);
                     break;
