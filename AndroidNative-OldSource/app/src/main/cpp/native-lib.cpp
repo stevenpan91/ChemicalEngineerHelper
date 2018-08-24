@@ -24,6 +24,8 @@ double FetchConversionFactorSI(std::string unit){
     //pressure
     elif(unit=="kPa")
         returnVal=1.0/1000;
+    elif(unit=="mPa")
+        returnVal=1000.0;
     elif(unit=="psi")
         returnVal=14.6959/1.01325e5;
     elif(unit=="bar")
